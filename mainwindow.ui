@@ -57,17 +57,22 @@
      <widget class="QTreeWidget" name="table">
       <column>
        <property name="text">
+        <string>Тип</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Часы</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
         <string>Проект</string>
        </property>
       </column>
       <column>
        <property name="text">
         <string>Изделие</string>
-       </property>
-      </column>
-      <column>
-       <property name="text">
-        <string>Часы</string>
        </property>
       </column>
       <column>
@@ -98,7 +103,8 @@
          </size>
         </property>
         <property name="icon">
-         <iconset theme="list-add-symbolic"/>
+         <iconset theme="list-add-symbolic">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -111,7 +117,8 @@
          </size>
         </property>
         <property name="icon">
-         <iconset theme="document-edit-symbolic"/>
+         <iconset theme="document-edit-symbolic">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -124,7 +131,8 @@
          </size>
         </property>
         <property name="icon">
-         <iconset theme="edit-delete-symbolic"/>
+         <iconset theme="edit-delete-symbolic">
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -164,7 +172,8 @@
          <string>Настройки</string>
         </property>
         <property name="icon">
-         <iconset theme="preferences-system-symbolic"/>
+         <iconset theme="preferences-system-symbolic">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -196,7 +205,8 @@
          <string>Сохранить</string>
         </property>
         <property name="icon">
-         <iconset theme="document-save-symbolic"/>
+         <iconset theme="document-save-symbolic">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -215,7 +225,8 @@
          <string>Отправить</string>
         </property>
         <property name="icon">
-         <iconset theme="mail-send"/>
+         <iconset theme="mail-send">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -256,7 +267,8 @@
   </action>
   <action name="actionTaskEdit">
    <property name="icon">
-    <iconset theme="document-edit-symbolic"/>
+    <iconset theme="document-edit-symbolic">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Редактировать</string>
@@ -264,7 +276,8 @@
   </action>
   <action name="actionTaskDelete">
    <property name="icon">
-    <iconset theme="remove"/>
+    <iconset theme="remove">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Удалить</string>

@@ -25,10 +25,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    dialogtaskedit.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    dialogtaskedit.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    dialogtaskedit.ui
