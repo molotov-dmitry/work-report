@@ -19,6 +19,8 @@ enum Column
     COL_ACTION,
     COL_DESCRIPTION,
     COL_RESULT,
+
+    COLUMN_COUNT
 };
 
 class MainWindow : public QMainWindow
@@ -37,12 +39,19 @@ private slots:
 
     void on_actionTaskDelete_triggered();
 
+    void loadData();
+    void saveData();
+
+    void exportData();
+
 private:
     Ui::MainWindow *ui;
 
     void setupDateRange();
 
     void setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog);
+
+
 };
 
 #endif // MAINWINDOW_H

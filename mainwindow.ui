@@ -194,7 +194,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QToolButton" name="buttonSave">
+       <widget class="QToolButton" name="buttonExport">
         <property name="minimumSize">
          <size>
           <width>120</width>
@@ -202,11 +202,10 @@
          </size>
         </property>
         <property name="text">
-         <string>Сохранить</string>
+         <string>Экспорт</string>
         </property>
         <property name="icon">
-         <iconset theme="document-save-symbolic">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="spreadsheet"/>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
