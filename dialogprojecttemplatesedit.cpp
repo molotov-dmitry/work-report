@@ -99,12 +99,7 @@ void DialogProjectTemplatesEdit::on_buttonAdd_clicked()
         ui->table->addTopLevelItem(item);
     }
 
-    foreach (QTreeWidgetItem* selectedItem, ui->table->selectedItems())
-    {
-        selectedItem->setSelected(false);
-    }
-
-    item->setSelected(true);
+    ui->table->setCurrentItem(item, 0, QItemSelectionModel::ClearAndSelect);
     ui->table->editItem(item, 0);
 }
 
@@ -142,13 +137,9 @@ void DialogProjectTemplatesEdit::on_buttonAddSub_clicked()
             projectItem->insertChild(projectItem->indexOfChild(insertAfter) + 1, item);
         }
 
-        foreach (QTreeWidgetItem* selectedItem, ui->table->selectedItems())
-        {
-            selectedItem->setSelected(false);
-        }
-
         ui->table->expandItem(projectItem);
-        item->setSelected(true);
+
+        ui->table->setCurrentItem(item, 0, QItemSelectionModel::ClearAndSelect);
         ui->table->editItem(item, 0);
     }
 }
@@ -205,10 +196,5 @@ void DialogProjectTemplatesEdit::moveItem(QTreeWidgetItem *item, int move)
         ui->table->insertTopLevelItem(index + move, child);
     }
 
-    foreach (QTreeWidgetItem* selectedItem, ui->table->selectedItems())
-    {
-        selectedItem->setSelected(false);
-    }
-
-    item->setSelected(true);
+    ui->table->setCurrentItem(item, 0, QItemSelectionModel::ClearAndSelect);
 }

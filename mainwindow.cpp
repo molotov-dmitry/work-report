@@ -22,6 +22,10 @@
 #include <QUrlQuery>
 #include <QDesktopServices>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -232,6 +236,16 @@ void MainWindow::saveData()
 
     taskFile.close();
 
+    //// Make file hidden (for Windows) ========================================
+
+#ifdef Q_OS_WIN
+    SetFileAttributes(taskPath.toStdString().c_str(), FILE_ATTRIBUTE_HIDDEN);
+#endif
+
+    //// Remove backup file ====================================================
+
+    QFile::remove(taskPathBak);
+
     //// =======================================================================
 }
 
@@ -285,13 +299,13 @@ void MainWindow::on_actionTaskEdit_triggered()
 
 void MainWindow::on_actionTaskDelete_triggered()
 {
-    if (QMessageBox::question(this, "Delete", "Delete selected item?") != QMessageBox::Yes)
+    QTreeWidgetItem* item = ui->table->currentItem();
+    if (item == Q_NULLPTR)
     {
         return;
     }
 
-    QTreeWidgetItem* item = ui->table->currentItem();
-    if (item == Q_NULLPTR)
+    if (QMessageBox::question(this, "Delete", "Delete selected item?") != QMessageBox::Yes)
     {
         return;
     }
@@ -437,6 +451,12 @@ void MainWindow::exportData()
     reportFile.write(reportString.toUtf8());
 
     reportFile.close();
+
+    //// Remove backup file ====================================================
+
+    QFile::remove(reportPathBak);
+
+    //// =======================================================================
 }
 
 void MainWindow::on_buttonSend_clicked()
