@@ -24,7 +24,7 @@ Settings::Settings()
 
     QFile configFile(configPath);
 
-    if (not configFile.open(QIODevice::ReadOnly))
+    if (not configFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return;
     }
@@ -71,7 +71,7 @@ void Settings::save()
 
     QFile configFile(configPath);
 
-    if (not configFile.open(QIODevice::WriteOnly))
+    if (not configFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         return;
     }

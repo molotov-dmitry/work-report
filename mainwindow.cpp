@@ -3,6 +3,7 @@
 
 #include "dialogtaskedit.h"
 #include "dialogsettingsedit.h"
+#include "dialogprojecttemplatesedit.h"
 
 #include <QDate>
 #include <QMessageBox>
@@ -124,7 +125,7 @@ void MainWindow::loadData()
 
     QFile file(taskPath);
 
-    if (not file.open(QIODevice::ReadOnly))
+    if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return;
     }
@@ -221,7 +222,7 @@ void MainWindow::saveData()
 
     QFile taskFile(taskPath);
 
-    if (not taskFile.open(QIODevice::WriteOnly))
+    if (not taskFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         //TODO: error
         return;
@@ -427,7 +428,7 @@ void MainWindow::exportData()
 
     QFile reportFile(reportPath);
 
-    if (not reportFile.open(QIODevice::WriteOnly))
+    if (not reportFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         //TODO: error
         return;
@@ -481,4 +482,34 @@ void MainWindow::on_buttonSend_clicked()
     outlook.startDetached();
 
 #endif
+}
+
+void MainWindow::on_buttonTemplates_clicked()
+{
+    DialogProjectTemplatesEdit dialog;
+    dialog.setProjectTemplates(mProjectTemplates);
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        mProjectTemplates.clear();
+
+        int id = 0;
+
+        foreach (const QString& project, dialog.getProjects())
+        {
+            mProjectTemplates.addProject(project);
+
+            foreach(const QString& product, dialog.getProducts(id))
+            {
+                mProjectTemplates.addProduct(project, product);
+            }
+
+            ++id;
+        }
+
+        if (not mProjectTemplates.save())
+        {
+            //TODO: error
+        }
+    }
 }

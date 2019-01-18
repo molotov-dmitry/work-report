@@ -19,7 +19,7 @@ ProjectTemplates::ProjectTemplates()
 
     QFile projectsFile(configPath);
 
-    if (not projectsFile.open(QIODevice::ReadOnly))
+    if (not projectsFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return;
     }
@@ -60,4 +60,53 @@ const QStringList &ProjectTemplates::getProjects() const
 const QMap<QString, QStringList> &ProjectTemplates::getData() const
 {
     return mData;
+}
+
+void ProjectTemplates::clear()
+{
+    mData.clear();
+    mProjects.clear();
+}
+
+void ProjectTemplates::addProject(const QString &project)
+{
+    mProjects.append(project);
+}
+
+void ProjectTemplates::addProduct(const QString& project, const QString& product)
+{
+    mData[project].append(product);
+}
+
+bool ProjectTemplates::save()
+{
+    QDir dir(SettingsDir::getSettingsDir(true));
+
+    if (not dir.exists())
+    {
+        return false;
+    }
+
+    QString configPath = dir.absoluteFilePath("projects");
+
+    QFile projectsFile(configPath);
+
+    if (not projectsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        return false;
+    }
+
+    QTextStream out(&projectsFile);
+
+    foreach (const QString& project, mProjects)
+    {
+        out << project << endl;
+
+        foreach (const QString& product, mData.value(project))
+        {
+            out << QString(" ") + product << endl;
+        }
+    }
+
+    projectsFile.close();
 }

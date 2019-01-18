@@ -30,7 +30,8 @@ SOURCES += \
     settings.cpp \
     dialogsettingsedit.cpp \
     projecttemplates.cpp \
-    settingsdir.cpp
+    settingsdir.cpp \
+    dialogprojecttemplatesedit.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,12 +39,14 @@ HEADERS += \
     settings.h \
     dialogsettingsedit.h \
     projecttemplates.h \
-    settingsdir.h
+    settingsdir.h \
+    dialogprojecttemplatesedit.h
 
 FORMS += \
         mainwindow.ui \
     dialogtaskedit.ui \
-    dialogsettingsedit.ui
+    dialogsettingsedit.ui \
+    dialogprojecttemplatesedit.ui
 
 RESOURCES += \
     res/resources.qrc

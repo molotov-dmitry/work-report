@@ -54,6 +54,8 @@ private slots:
 
     void on_buttonSend_clicked();
 
+    void on_buttonTemplates_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -176,7 +176,7 @@
        <widget class="QToolButton" name="buttonSettings">
         <property name="minimumSize">
          <size>
-          <width>120</width>
+          <width>0</width>
           <height>32</height>
          </size>
         </property>
@@ -189,6 +189,19 @@
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="buttonTemplates">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Шаблоны</string>
         </property>
        </widget>
       </item>
@@ -209,7 +222,7 @@
        <widget class="QToolButton" name="buttonExport">
         <property name="minimumSize">
          <size>
-          <width>120</width>
+          <width>0</width>
           <height>32</height>
          </size>
         </property>
@@ -229,7 +242,7 @@
        <widget class="QToolButton" name="buttonSend">
         <property name="minimumSize">
          <size>
-          <width>120</width>
+          <width>0</width>
           <height>32</height>
          </size>
         </property>
