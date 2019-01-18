@@ -3,6 +3,10 @@
 
 #include <QDialog>
 
+#include "projecttemplates.h"
+
+class QTreeWidgetItem;
+
 namespace Ui {
 class DialogProjectTemplatesEdit;
 }
@@ -15,8 +19,26 @@ public:
     explicit DialogProjectTemplatesEdit(QWidget *parent = 0);
     ~DialogProjectTemplatesEdit();
 
+    void setProjectTemplates(const ProjectTemplates& templates);
+
+    QStringList getProjects() const;
+    QStringList getProducts(int index) const;
+
+private slots:
+    void on_buttonAdd_clicked();
+
+    void on_buttonRemove_clicked();
+
+    void on_buttonAddSub_clicked();
+
+    void on_buttonUp_clicked();
+
+    void on_buttonDown_clicked();
+
 private:
     Ui::DialogProjectTemplatesEdit *ui;
+
+    void moveItem(QTreeWidgetItem* item, int move);
 };
 
 #endif // DIALOGPROJECTTEMPLATESEDIT_H
