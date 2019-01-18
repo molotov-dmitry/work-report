@@ -16,7 +16,9 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
-#include <QProcess>
+#include <QUrl>
+#include <QUrlQuery>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -445,17 +447,14 @@ void MainWindow::on_buttonSend_clicked()
     QString program;
     QStringList arguments;
 
-#ifdef Q_OS_LINUX
-
-    program = "xdg-open";
     arguments << "mailto:" + mSettings.getMailTo() + "?attach=" + filePath + "&subject=Отчет за неделю";
 
-#endif
+    QUrlQuery query;
+    query.addQueryItem("subject", "Отчет за неделю");
+    query.addQueryItem("attach", filePath);
 
-    QProcess process;
+    QUrl url("mailto:" + mSettings.getMailTo());
+    url.setQuery(query);
 
-    process.setProgram(program);
-    process.setArguments(arguments);
-
-    process.startDetached();
+    QDesktopServices::openUrl(url);
 }
