@@ -1,20 +1,14 @@
 #include "projecttemplates.h"
 
+#include "settingsdir.h"
+
 #include <QStandardPaths>
 #include <QDir>
 #include <QTextStream>
 
 ProjectTemplates::ProjectTemplates()
 {
-    QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-
-    QDir dir(path);
-
-    if (not dir.cd("work-report"))
-    {
-        dir.mkdir("work-report");
-        dir.cd("work-report");
-    }
+    QDir dir(SettingsDir::getSettingsDir(false));
 
     if (not dir.exists())
     {

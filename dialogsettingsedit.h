@@ -23,8 +23,17 @@ public:
     void setMailTo(const QString& mailTo);
     void setReportDir(const QString& reportDir);
 
+#ifdef Q_OS_WIN
+    QString getOutlookPath() const;
+    void setOutlookPath(const QString& outlookPath);
+#endif
+
 private slots:
     void on_buttonSetReportDirectory_clicked();
+
+#ifdef Q_OS_WIN
+    void on_buttonSetOutlookPath_clicked();
+#endif
 
 private:
     Ui::DialogSettingsEdit *ui;

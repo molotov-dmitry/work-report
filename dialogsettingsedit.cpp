@@ -2,12 +2,17 @@
 #include "ui_dialogsettingsedit.h"
 
 #include <QFileDialog>
+#include <QStandardPaths>
 
 DialogSettingsEdit::DialogSettingsEdit(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogSettingsEdit)
 {
     ui->setupUi(this);
+
+#ifndef Q_OS_WIN
+   ui->widgetOutlookPath->hide();
+#endif
 }
 
 DialogSettingsEdit::~DialogSettingsEdit()
@@ -45,6 +50,18 @@ void DialogSettingsEdit::setReportDir(const QString &reportDir)
     ui->editReportDir->setText(reportDir);
 }
 
+#ifdef Q_OS_WIN
+QString DialogSettingsEdit::getOutlookPath() const
+{
+    return ui->editOutlookPath->text();
+}
+
+void DialogSettingsEdit::setOutlookPath(const QString &outlookPath)
+{
+    ui->editOutlookPath->setText(outlookPath);
+}
+#endif
+
 void DialogSettingsEdit::on_buttonSetReportDirectory_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this,
@@ -57,3 +74,15 @@ void DialogSettingsEdit::on_buttonSetReportDirectory_clicked()
         ui->editReportDir->setText(dir);
     }
 }
+
+#ifdef Q_OS_WIN
+void DialogSettingsEdit::on_buttonSetOutlookPath_clicked()
+{
+    QString dir = QFileDialog::getOpenFileName(this, tr("Open File"), getenv("PROGRAMFILES"), "outlook.exe");
+
+    if (not dir.isEmpty())
+    {
+        ui->editOutlookPath->setText(dir);
+    }
+}
+#endif

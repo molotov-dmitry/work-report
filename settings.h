@@ -20,11 +20,20 @@ public:
     QString getWorkPath() const;
     void setWorkPath(const QString &value);
 
+#ifdef Q_OS_WIN
+    QString getOutlookPath() const;
+    void setOutlookPath(const QString &value);
+#endif
+
 private:
 
     QString userName;
     QString mailTo;
     QString workPath;
+
+#ifdef Q_OS_WIN
+    QString outlookPath;
+#endif
 };
 
 #endif // SETTINGS_H

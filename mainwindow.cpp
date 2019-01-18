@@ -16,6 +16,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 
+#include <QProcess>
 #include <QUrl>
 #include <QUrlQuery>
 #include <QDesktopServices>
@@ -307,6 +308,10 @@ void MainWindow::on_buttonSettings_clicked()
     dialog.setMailTo(mSettings.getMailTo());
     dialog.setReportDir(mSettings.getWorkPath());
 
+#ifdef Q_OS_WIN
+    dialog.setOutlookPath(mSettings.getOutlookPath());
+#endif
+
     if (dialog.exec() == QDialog::Accepted)
     {
         bool save = false;
@@ -328,6 +333,14 @@ void MainWindow::on_buttonSettings_clicked()
             mSettings.setWorkPath(dialog.getReportDir());
             save = true;
         }
+
+#ifdef Q_OS_WIN
+        if (mSettings.getOutlookPath() != dialog.getOutlookPath())
+        {
+            mSettings.setOutlookPath(dialog.getOutlookPath());
+            save = true;
+        }
+#endif
 
         if (save)
         {
@@ -444,11 +457,7 @@ void MainWindow::on_buttonSend_clicked()
 
     //// Get program and arguments =============================================
 
-    QString program;
-    QStringList arguments;
-
-    arguments << "mailto:" + mSettings.getMailTo() + "?attach=" + filePath + "&subject=Отчет за неделю";
-
+#ifdef Q_OS_LINUX
     QUrlQuery query;
     query.addQueryItem("subject", "Отчет за неделю");
     query.addQueryItem("attach", filePath);
@@ -457,4 +466,19 @@ void MainWindow::on_buttonSend_clicked()
     url.setQuery(query);
 
     QDesktopServices::openUrl(url);
+#endif
+#ifdef Q_OS_WIN
+    QString program;
+    QStringList arguments;
+
+    program = mSettings.getOutlookPath();
+    arguments << "/c" << "ipm.note" << "/m" << mSettings.getMailTo() +"&subject=Отчет за неделю" << "/a" << filePath;
+
+    QProcess outlook;
+    outlook.setProgram(program);
+    outlook.setArguments(arguments);
+
+    outlook.startDetached();
+
+#endif
 }

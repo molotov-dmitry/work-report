@@ -1,5 +1,7 @@
 #include "settings.h"
 
+#include "settingsdir.h"
+
 #include <QStandardPaths>
 #include <QDir>
 #include <QFile>
@@ -11,15 +13,7 @@ Settings::Settings()
 {
     loadDefaultSettings();
 
-    QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-
-    QDir dir(path);
-
-    if (not dir.cd("work-report"))
-    {
-        dir.mkdir("work-report");
-        dir.cd("work-report");
-    }
+    QDir dir(SettingsDir::getSettingsDir(false));
 
     if (not dir.exists())
     {
@@ -43,20 +37,16 @@ Settings::Settings()
     mailTo   = configObject["mailTo"].toString();
     workPath = configObject["dataPath"].toString();
 
+#ifdef Q_OS_WIN
+    outlookPath = configObject["outlookPath"].toString();
+#endif
+
     configFile.close();
 }
 
 void Settings::save()
 {
-    QString path = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-
-    QDir dir(path);
-
-    if (not dir.cd("work-report"))
-    {
-        dir.mkdir("work-report");
-        dir.cd("work-report");
-    }
+    QDir dir(SettingsDir::getSettingsDir(true));
 
     if (not dir.exists())
     {
@@ -74,6 +64,10 @@ void Settings::save()
     configObject["userName"] = userName;
     configObject["mailTo"] = mailTo;
     configObject["dataPath"] = workPath;
+
+#ifdef Q_OS_WIN
+    configObject["outlookPath"] = outlookPath;
+#endif
 
     QFile configFile(configPath);
 
@@ -127,3 +121,15 @@ void Settings::setWorkPath(const QString &value)
 {
     workPath = value;
 }
+
+#ifdef Q_OS_WIN
+QString Settings::getOutlookPath() const
+{
+    return outlookPath;
+}
+
+void Settings::setOutlookPath(const QString &value)
+{
+    outlookPath = value;
+}
+#endif

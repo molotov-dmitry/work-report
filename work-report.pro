@@ -29,14 +29,16 @@ SOURCES += \
     dialogtaskedit.cpp \
     settings.cpp \
     dialogsettingsedit.cpp \
-    projecttemplates.cpp
+    projecttemplates.cpp \
+    settingsdir.cpp
 
 HEADERS += \
         mainwindow.h \
     dialogtaskedit.h \
     settings.h \
     dialogsettingsedit.h \
-    projecttemplates.h
+    projecttemplates.h \
+    settingsdir.h
 
 FORMS += \
         mainwindow.ui \
