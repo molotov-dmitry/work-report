@@ -357,9 +357,9 @@ void MainWindow::exportData()
 
     const int count = ui->table->topLevelItemCount();
 
-    reportString.append("Сотрудник");
+    reportString.append("ФИО");
     reportString.append("\t");
-    reportString.append("Диапазон");
+    reportString.append("Временной период");
     reportString.append("\t");
 
     for (int j = 0; j < COLUMN_COUNT; ++j)
