@@ -1,11 +1,28 @@
 #include "dialogtaskedit.h"
 #include "ui_dialogtaskedit.h"
 
+#include <QToolButton>
+
 DialogTaskEdit::DialogTaskEdit(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogTaskEdit)
 {
     ui->setupUi(this);
+
+    const int HOUR_PRESETS[] = {1, 2, 4, 8, 16, 32, 40};
+    const int HOUR_PRESET_COUNT = sizeof(HOUR_PRESETS) / sizeof(HOUR_PRESETS[0]);
+
+    for (int i = 0; i < HOUR_PRESET_COUNT; ++i)
+    {
+        QToolButton* toolButton = new QToolButton(this);
+
+        toolButton->setText(QString::number(HOUR_PRESETS[i]));
+        toolButton->setMinimumSize(32, 32);
+
+        connect(toolButton, SIGNAL(clicked()), this, SLOT(setHoursPreset()));
+
+        ui->layoutHourPresets->addWidget(toolButton);
+    }
 }
 
 DialogTaskEdit::~DialogTaskEdit()
@@ -96,4 +113,40 @@ void DialogTaskEdit::setTaskDescription(const QString &description)
 void DialogTaskEdit::setTaskResult(int result)
 {
     ui->boxResult->setCurrentIndex(result);
+}
+
+void DialogTaskEdit::setProjectTemplates(const ProjectTemplates &projects)
+{
+    mProjects = projects.getData();
+
+    ui->editProject->clear();
+
+    foreach(QString project, projects.getProjects())
+    {
+        ui->editProject->addItem(project);
+    }
+}
+
+void DialogTaskEdit::setHoursPreset()
+{
+    QToolButton* button = static_cast<QToolButton*>(sender());
+
+    ui->editHoursSpent->setValue(button->text().toInt());
+}
+
+void DialogTaskEdit::on_editProject_currentTextChanged(const QString &arg1)
+{
+    QString text = ui->editProduct->currentText();
+
+    ui->editProduct->clear();
+
+    foreach(QString project, mProjects.value(arg1))
+    {
+        ui->editProduct->addItem(project);
+    }
+
+    if (not text.isEmpty())
+    {
+        ui->editProduct->setCurrentText(text);
+    }
 }

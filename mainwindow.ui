@@ -32,6 +32,12 @@
       </item>
       <item row="1" column="1">
        <widget class="QDateEdit" name="dateTo">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="calendarPopup">
          <bool>true</bool>
         </property>
@@ -39,6 +45,12 @@
       </item>
       <item row="1" column="0">
        <widget class="QDateEdit" name="dateFrom">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="calendarPopup">
          <bool>true</bool>
         </property>
@@ -205,7 +217,8 @@
          <string>Экспорт</string>
         </property>
         <property name="icon">
-         <iconset theme="spreadsheet"/>
+         <iconset theme="spreadsheet">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -242,7 +255,7 @@
      <x>0</x>
      <y>0</y>
      <width>832</width>
-     <height>28</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
@@ -284,6 +297,18 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>dateFrom</tabstop>
+  <tabstop>dateTo</tabstop>
+  <tabstop>buttonDateSelect</tabstop>
+  <tabstop>table</tabstop>
+  <tabstop>buttonAdd</tabstop>
+  <tabstop>buttonEdit</tabstop>
+  <tabstop>buttonRemove</tabstop>
+  <tabstop>buttonSettings</tabstop>
+  <tabstop>buttonExport</tabstop>
+  <tabstop>buttonSend</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

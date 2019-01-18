@@ -26,12 +26,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    dialogtaskedit.cpp
+    dialogtaskedit.cpp \
+    settings.cpp \
+    dialogsettingsedit.cpp \
+    projecttemplates.cpp
 
 HEADERS += \
         mainwindow.h \
-    dialogtaskedit.h
+    dialogtaskedit.h \
+    settings.h \
+    dialogsettingsedit.h \
+    projecttemplates.h
 
 FORMS += \
         mainwindow.ui \
-    dialogtaskedit.ui
+    dialogtaskedit.ui \
+    dialogsettingsedit.ui
+
+RESOURCES += \
+    res/resources.qrc

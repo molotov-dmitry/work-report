@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>723</width>
-    <height>593</height>
+    <width>524</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,6 +33,12 @@
        </item>
        <item row="7" column="0">
         <widget class="QComboBox" name="boxAction">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
          <item>
           <property name="text">
            <string>Разработка</string>
@@ -126,10 +132,23 @@
         </widget>
        </item>
        <item row="9" column="0">
-        <widget class="QLineEdit" name="editDescription"/>
+        <widget class="QLineEdit" name="editDescription">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
+        </widget>
        </item>
        <item row="11" column="0">
         <widget class="QComboBox" name="boxResult">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>32</height>
+          </size>
+         </property>
          <item>
           <property name="text">
            <string>Выполнено</string>
@@ -242,6 +261,15 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>boxType</tabstop>
+  <tabstop>editHoursSpent</tabstop>
+  <tabstop>editProject</tabstop>
+  <tabstop>editProduct</tabstop>
+  <tabstop>boxAction</tabstop>
+  <tabstop>editDescription</tabstop>
+  <tabstop>boxResult</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

@@ -2,16 +2,21 @@
 #include "ui_mainwindow.h"
 
 #include "dialogtaskedit.h"
+#include "dialogsettingsedit.h"
 
 #include <QDate>
 #include <QMessageBox>
 
 #include <QDebug>
 
+#include <QDir>
 #include <QFile>
+
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+
+#include <QProcess>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,6 +33,19 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->table, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(on_actionTaskEdit_triggered()));
 
     setupDateRange();
+
+    //// Icons =================================================================
+
+    ui->buttonAdd->setIcon(QIcon::fromTheme("list-add-symbolic", QIcon(":/icons/add.svg")));
+    ui->buttonEdit->setIcon(QIcon::fromTheme("document-edit-symbolic", QIcon(":/icons/edit.svg")));
+    ui->buttonRemove->setIcon(QIcon::fromTheme("edit-delete-symbolic", QIcon(":/icons/delete.svg")));
+
+    ui->buttonSettings->setIcon(QIcon::fromTheme("preferences-system-symbolic", QIcon(":/icons/settings.svg")));
+
+    ui->buttonExport->setIcon(QIcon::fromTheme("spreadsheet", QIcon(":/icons/table.svg")));
+    ui->buttonSend->setIcon(QIcon::fromTheme("mail-send", QIcon(":/icons/email.svg")));
+
+    //// =======================================================================
 
     loadData();
 }
@@ -80,9 +98,28 @@ void MainWindow::setItem(QTreeWidgetItem &item, const DialogTaskEdit &dialog)
     }
 }
 
+QString MainWindow::getDateRangeString() const
+{
+    return ui->dateFrom->date().toString("dd.MM.yyyy") + " - " + ui->dateTo->date().toString("dd.MM.yyyy");
+}
+
 void MainWindow::loadData()
 {
-    QFile file(".task.json");
+    //// Get task file paths ===================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        // Warning
+        return;
+    }
+
+    QString taskPath(taskDir.absoluteFilePath(".task.json"));
+
+    //// Open file =============================================================
+
+    QFile file(taskPath);
 
     if (not file.open(QIODevice::ReadOnly))
     {
@@ -91,6 +128,8 @@ void MainWindow::loadData()
 
     QByteArray taskByteArray = file.readAll();
 
+    //// Parse JSON ============================================================
+
     QJsonDocument taskDocument = QJsonDocument::fromJson(taskByteArray);
 
     foreach (const QJsonValue& value, taskDocument.array())
@@ -98,6 +137,7 @@ void MainWindow::loadData()
         QJsonObject object = value.toObject();
 
         DialogTaskEdit dialog;
+        dialog.setProjectTemplates(mProjectTemplates);
 
         dialog.setTaskType(object["type"].toInt());
         dialog.setTaskHoursSpent(object["hours"].toInt());
@@ -117,10 +157,14 @@ void MainWindow::loadData()
 
         ui->table->addTopLevelItem(item);
     }
+
+    //// =======================================================================
 }
 
 void MainWindow::saveData()
 {
+    //// Generate JSON =========================================================
+
     QJsonArray taskArray;
 
     const int count = ui->table->topLevelItemCount();
@@ -149,81 +193,48 @@ void MainWindow::saveData()
 
     QJsonDocument taskDocument(taskArray);
 
-    QFile file(".task.json");
+    //// Get task file paths ===================================================
 
-    file.remove(".task.json.old");
+    QDir taskDir;
 
-    file.rename(".task.json", ".task.json.old");
-
-    file.open(QIODevice::WriteOnly);
-
-    file.write(taskDocument.toJson());
-
-    file.close();
-
-}
-
-void MainWindow::exportData()
-{
-    QString taskString;
-
-    const int count = ui->table->topLevelItemCount();
-
-    taskString.append("Сотрудник");
-    taskString.append("\t");
-    taskString.append("Диапазон");
-    taskString.append("\t");
-
-    for (int j = 0; j < COLUMN_COUNT; ++j)
+    if (not taskDir.cd(mSettings.getWorkPath()))
     {
-        taskString.append(ui->table->headerItem()->text(j));
+        taskDir.mkdir(mSettings.getWorkPath());
 
-        if (j < COLUMN_COUNT - 1)
+        if (not taskDir.cd(mSettings.getWorkPath()))
         {
-            taskString.append("\t");
-        }
-        else
-        {
-            taskString.append("\n");
+            //TODO: error
+            return;
         }
     }
 
-    for (int i = 0; i < count; ++i)
+    QString taskPath(taskDir.absoluteFilePath(".task.json"));
+    QString taskPathBak(taskDir.absoluteFilePath(".task.json.bak"));
+
+    QFile::remove(taskPathBak);
+    QFile::rename(taskPath, taskPathBak);
+
+    //// Save task backup file =================================================
+
+    QFile taskFile(taskPath);
+
+    if (not taskFile.open(QIODevice::WriteOnly))
     {
-        const QTreeWidgetItem* item = ui->table->topLevelItem(i);
-
-        taskString.append("Имя");
-        taskString.append("\t");
-        taskString.append(ui->dateFrom->date().toString("dd.MM.yyyy") + " - " + ui->dateTo->date().toString("dd.MM.yyyy"));
-        taskString.append("\t");
-
-        for (int j = 0; j < COLUMN_COUNT; ++j)
-        {
-            taskString.append(item->text(j));
-
-            if (j < COLUMN_COUNT - 1)
-            {
-                taskString.append("\t");
-            }
-            else
-            {
-                taskString.append("\n");
-            }
-        }
+        //TODO: error
+        return;
     }
 
-    QFile file("task.csv");
+    taskFile.write(taskDocument.toJson());
 
-    file.open(QIODevice::WriteOnly);
+    taskFile.close();
 
-    file.write(taskString.toUtf8());
-
-    file.close();
+    //// =======================================================================
 }
 
 void MainWindow::on_actionTaskNew_triggered()
 {
     DialogTaskEdit dialog;
+    dialog.setProjectTemplates(mProjectTemplates);
 
     if (dialog.exec() == QDialog::Accepted)
     {
@@ -246,6 +257,7 @@ void MainWindow::on_actionTaskEdit_triggered()
     }
 
     DialogTaskEdit dialog;
+    dialog.setProjectTemplates(mProjectTemplates);
 
     dialog.setTaskType(item->data(COL_TYPE, Qt::UserRole).toInt());
     dialog.setTaskHoursSpent(item->data(COL_HOURS_SPENT, Qt::UserRole).toInt());
@@ -283,4 +295,167 @@ void MainWindow::on_actionTaskDelete_triggered()
     delete item;
 
     saveData();
+}
+
+void MainWindow::on_buttonSettings_clicked()
+{
+    DialogSettingsEdit dialog;
+
+    dialog.setName(mSettings.getUserName());
+    dialog.setMailTo(mSettings.getMailTo());
+    dialog.setReportDir(mSettings.getWorkPath());
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        bool save = false;
+
+        if (mSettings.getUserName() != dialog.getName())
+        {
+            mSettings.setUserName(dialog.getName());
+            save = true;
+        }
+
+        if (mSettings.getMailTo() != dialog.getMailTo())
+        {
+            mSettings.setMailTo(dialog.getMailTo());
+            save = true;
+        }
+
+        if (mSettings.getWorkPath() != dialog.getReportDir())
+        {
+            mSettings.setWorkPath(dialog.getReportDir());
+            save = true;
+        }
+
+        if (save)
+        {
+            mSettings.save();
+        }
+    }
+}
+
+void MainWindow::exportData()
+{
+    //// Generate CSV ==========================================================
+
+    QString reportString;
+
+    const int count = ui->table->topLevelItemCount();
+
+    reportString.append("Сотрудник");
+    reportString.append("\t");
+    reportString.append("Диапазон");
+    reportString.append("\t");
+
+    for (int j = 0; j < COLUMN_COUNT; ++j)
+    {
+        reportString.append(ui->table->headerItem()->text(j));
+
+        if (j < COLUMN_COUNT - 1)
+        {
+            reportString.append("\t");
+        }
+        else
+        {
+            reportString.append("\n");
+        }
+    }
+
+    for (int i = 0; i < count; ++i)
+    {
+        const QTreeWidgetItem* item = ui->table->topLevelItem(i);
+
+        reportString.append(mSettings.getUserName());
+        reportString.append("\t");
+        reportString.append(getDateRangeString());
+        reportString.append("\t");
+
+        for (int j = 0; j < COLUMN_COUNT; ++j)
+        {
+            reportString.append(item->text(j));
+
+            if (j < COLUMN_COUNT - 1)
+            {
+                reportString.append("\t");
+            }
+            else
+            {
+                reportString.append("\n");
+            }
+        }
+    }
+
+    //// Get task file paths ===================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        taskDir.mkdir(mSettings.getWorkPath());
+
+        if (not taskDir.cd(mSettings.getWorkPath()))
+        {
+            //TODO: error
+            return;
+        }
+    }
+
+    QString fileName = QString::fromUtf8("Отчет ") + getDateRangeString() + ".csv";
+
+    QString reportPath(taskDir.absoluteFilePath(fileName));
+    QString reportPathBak(taskDir.absoluteFilePath(fileName + ".bak"));
+
+    QFile::remove(reportPathBak);
+    QFile::rename(reportPath, reportPathBak);
+
+    //// Save report file ======================================================
+
+    QFile reportFile(reportPath);
+
+    if (not reportFile.open(QIODevice::WriteOnly))
+    {
+        //TODO: error
+        return;
+    }
+
+    reportFile.write(reportString.toUtf8());
+
+    reportFile.close();
+}
+
+void MainWindow::on_buttonSend_clicked()
+{
+    exportData();
+
+    //// Get report file name ==================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        //TODO: error
+        return;
+    }
+
+    QString fileName = QString::fromUtf8("Отчет ") + getDateRangeString() + ".csv";
+    QString filePath = taskDir.absoluteFilePath(fileName);
+
+    //// Get program and arguments =============================================
+
+    QString program;
+    QStringList arguments;
+
+#ifdef Q_OS_LINUX
+
+    program = "xdg-open";
+    arguments << "mailto:" + mSettings.getMailTo() + "?attach=" + filePath + "&subject=Отчет за неделю";
+
+#endif
+
+    QProcess process;
+
+    process.setProgram(program);
+    process.setArguments(arguments);
+
+    process.startDetached();
 }

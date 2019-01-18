@@ -3,6 +3,12 @@
 
 #include <QMainWindow>
 
+#include <QMap>
+#include <QStringList>
+
+#include "settings.h"
+#include "projecttemplates.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -42,14 +48,24 @@ private slots:
     void loadData();
     void saveData();
 
+    void on_buttonSettings_clicked();
+
     void exportData();
+
+    void on_buttonSend_clicked();
 
 private:
     Ui::MainWindow *ui;
 
+    Settings mSettings;
+
+    ProjectTemplates mProjectTemplates;
+
     void setupDateRange();
 
     void setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog);
+
+    QString getDateRangeString() const;
 
 
 };

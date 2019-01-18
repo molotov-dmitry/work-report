@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+#include "projecttemplates.h"
+
 enum TaskType
 {
     TASK_ACTION,
@@ -61,8 +63,18 @@ public:
     void setTaskDescription(const QString& description);
     void setTaskResult(int result);
 
+    void setProjectTemplates(const ProjectTemplates& projects);
+
+private slots:
+
+    void setHoursPreset();
+
+    void on_editProject_currentTextChanged(const QString &arg1);
+
 private:
     Ui::DialogTaskEdit *ui;
+
+    QMap<QString, QStringList> mProjects;
 };
 
 #endif // DIALOGTASKEDIT_H
