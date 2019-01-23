@@ -115,7 +115,7 @@
          </size>
         </property>
         <property name="icon">
-         <iconset theme="list-add-symbolic">
+         <iconset theme="add">
           <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
@@ -129,8 +129,7 @@
          </size>
         </property>
         <property name="icon">
-         <iconset theme="document-edit-symbolic">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="edit"/>
         </property>
        </widget>
       </item>
@@ -143,7 +142,7 @@
          </size>
         </property>
         <property name="icon">
-         <iconset theme="edit-delete-symbolic">
+         <iconset theme="remove">
           <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
@@ -230,7 +229,8 @@
          <string>Открыть директорию с отчетами</string>
         </property>
         <property name="icon">
-         <iconset theme="folder"/>
+         <iconset theme="folder">
+          <normaloff>.</normaloff>.</iconset>
         </property>
         <property name="toolButtonStyle">
          <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -287,7 +287,7 @@
      <x>0</x>
      <y>0</y>
      <width>832</width>
-     <height>24</height>
+     <height>28</height>
     </rect>
    </property>
   </widget>

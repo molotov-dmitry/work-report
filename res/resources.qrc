@@ -4,7 +4,13 @@
         <file>icons/delete.svg</file>
         <file>icons/edit.svg</file>
         <file>icons/email.svg</file>
+        <file>icons/move-down.svg</file>
+        <file>icons/move-up.svg</file>
+        <file>icons/product-add.svg</file>
+        <file>icons/project-add.svg</file>
         <file>icons/settings.svg</file>
         <file>icons/table.svg</file>
+        <file>icons/text.svg</file>
+        <file>icons/tree.svg</file>
     </qresource>
 </RCC>

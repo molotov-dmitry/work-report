@@ -2,12 +2,24 @@
 #include "ui_dialogprojecttemplatesedit.h"
 
 #include <QTreeWidgetItem>
+#include <QFontDatabase>
 
 DialogProjectTemplatesEdit::DialogProjectTemplatesEdit(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogProjectTemplatesEdit)
 {
     ui->setupUi(this);
+
+    ui->buttonAdd->setIcon(QIcon::fromTheme("folder-add", QIcon(":/icons/project-add.svg")));
+    ui->buttonAddSub->setIcon(QIcon::fromTheme("document-add", QIcon(":/icons/product-add.svg")));
+    ui->buttonRemove->setIcon(QIcon::fromTheme("edit-delete-symbolic", QIcon(":/icons/delete.svg")));
+
+    ui->buttonUp->setIcon(QIcon::fromTheme("up", QIcon(":/icons/move-up.svg")));
+    ui->buttonDown->setIcon(QIcon::fromTheme("down", QIcon(":/icons/move-down.svg")));
+
+    ui->buttonSwitchMode->setIcon(QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
+
+    ui->editTemplates->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 }
 
 DialogProjectTemplatesEdit::~DialogProjectTemplatesEdit()
@@ -68,6 +80,16 @@ QStringList DialogProjectTemplatesEdit::getProducts(int index) const
     }
 
     return result;
+}
+
+void DialogProjectTemplatesEdit::accept()
+{
+    if (ui->stackedWidget->currentIndex() == 1)
+    {
+        on_buttonSwitchMode_clicked();
+    }
+
+    QDialog::accept();
 }
 
 void DialogProjectTemplatesEdit::on_buttonAdd_clicked()
@@ -197,4 +219,72 @@ void DialogProjectTemplatesEdit::moveItem(QTreeWidgetItem *item, int move)
     }
 
     ui->table->setCurrentItem(item, 0, QItemSelectionModel::ClearAndSelect);
+}
+
+void DialogProjectTemplatesEdit::on_buttonSwitchMode_clicked()
+{
+    if (ui->stackedWidget->currentIndex() == 0)
+    {
+        ui->stackedWidget->setCurrentIndex(1);
+        ui->buttonSwitchMode->setIcon(QIcon::fromTheme("view-list-tree", QIcon(":/icons/tree.svg")));
+        ui->buttonSwitchMode->setText(QString::fromUtf8("Древовидный режим"));
+
+        ui->editTemplates->clear();
+
+        for (int i = 0; i < ui->table->topLevelItemCount(); ++i)
+        {
+            QTreeWidgetItem* projectItem = ui->table->topLevelItem(i);
+
+            ui->editTemplates->appendPlainText(projectItem->text(0));
+
+            for (int j = 0; j < projectItem->childCount(); ++j)
+            {
+                QTreeWidgetItem* productItem = projectItem->child(j);
+
+                ui->editTemplates->appendPlainText(QString(" ") + productItem->text(0));
+            }
+        }
+    }
+    else
+    {
+        ui->stackedWidget->setCurrentIndex(0);
+        ui->buttonSwitchMode->setIcon(QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
+        ui->buttonSwitchMode->setText(QString::fromUtf8("Текстовый режим"));
+
+        ui->table->clear();
+
+        QStringList lines = ui->editTemplates->toPlainText().split('\n');
+
+        QTreeWidgetItem* currentProject = Q_NULLPTR;
+
+        foreach (const QString& line, lines)
+        {
+            if (line.isEmpty())
+            {
+                continue;
+            }
+
+            if (line.startsWith(' '))
+            {
+                if (currentProject == Q_NULLPTR)
+                {
+                    currentProject = new QTreeWidgetItem();
+                    ui->table->addTopLevelItem(currentProject);
+                }
+
+                QTreeWidgetItem* currentProduct = new QTreeWidgetItem();
+                currentProduct->setText(0, line.mid(1));
+
+                currentProject->addChild(currentProduct);
+            }
+            else
+            {
+                currentProject = new QTreeWidgetItem();
+                currentProject->setText(0, line);
+                ui->table->addTopLevelItem(currentProject);
+            }
+
+            ui->table->expandItem(currentProject);
+        }
+    }
 }

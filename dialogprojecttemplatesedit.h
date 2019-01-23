@@ -24,6 +24,8 @@ public:
     QStringList getProjects() const;
     QStringList getProducts(int index) const;
 
+    void accept();
+
 private slots:
     void on_buttonAdd_clicked();
 
@@ -34,6 +36,8 @@ private slots:
     void on_buttonUp_clicked();
 
     void on_buttonDown_clicked();
+
+    void on_buttonSwitchMode_clicked();
 
 private:
     Ui::DialogProjectTemplatesEdit *ui;
