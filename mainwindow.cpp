@@ -366,55 +366,6 @@ void MainWindow::on_buttonSettings_clicked()
 
 void MainWindow::exportData()
 {
-    //// Generate CSV ==========================================================
-
-    QString reportString;
-
-    const int count = ui->table->topLevelItemCount();
-
-    reportString.append("ФИО");
-    reportString.append("\t");
-    reportString.append("Временной период");
-    reportString.append("\t");
-
-    for (int j = 0; j < COLUMN_COUNT; ++j)
-    {
-        reportString.append(ui->table->headerItem()->text(j));
-
-        if (j < COLUMN_COUNT - 1)
-        {
-            reportString.append("\t");
-        }
-        else
-        {
-            reportString.append("\n");
-        }
-    }
-
-    for (int i = 0; i < count; ++i)
-    {
-        const QTreeWidgetItem* item = ui->table->topLevelItem(i);
-
-        reportString.append(mSettings.getUserName());
-        reportString.append("\t");
-        reportString.append(getDateRangeString());
-        reportString.append("\t");
-
-        for (int j = 0; j < COLUMN_COUNT; ++j)
-        {
-            reportString.append(item->text(j));
-
-            if (j < COLUMN_COUNT - 1)
-            {
-                reportString.append("\t");
-            }
-            else
-            {
-                reportString.append("\n");
-            }
-        }
-    }
-
     //// Get task file paths ===================================================
 
     QDir taskDir;
@@ -438,7 +389,7 @@ void MainWindow::exportData()
     QFile::remove(reportPathBak);
     QFile::rename(reportPath, reportPathBak);
 
-    //// Save report file ======================================================
+    //// Open report file ======================================================
 
     QFile reportFile(reportPath);
 
@@ -448,7 +399,58 @@ void MainWindow::exportData()
         return;
     }
 
-    reportFile.write(reportString.toUtf8());
+    //// Generate CSV ==========================================================
+
+    QTextStream reportString(&reportFile);
+
+    reportString.setGenerateByteOrderMark(true);
+
+    const int count = ui->table->topLevelItemCount();
+
+    reportString << QString::fromUtf8("ФИО");
+    reportString << QString::fromUtf8("\t");
+    reportString << QString::fromUtf8("Временной период");
+    reportString << QString::fromUtf8("\t");
+
+    for (int j = 0; j < COLUMN_COUNT; ++j)
+    {
+        reportString << ui->table->headerItem()->text(j);
+
+        if (j < COLUMN_COUNT - 1)
+        {
+            reportString << QString::fromUtf8("\t");
+        }
+        else
+        {
+            reportString << QString::fromUtf8("\n");
+        }
+    }
+
+    for (int i = 0; i < count; ++i)
+    {
+        const QTreeWidgetItem* item = ui->table->topLevelItem(i);
+
+        reportString << mSettings.getUserName();
+        reportString << QString::fromUtf8("\t");
+        reportString << getDateRangeString();
+        reportString << QString::fromUtf8("\t");
+
+        for (int j = 0; j < COLUMN_COUNT; ++j)
+        {
+            reportString << item->text(j);
+
+            if (j < COLUMN_COUNT - 1)
+            {
+                reportString << QString::fromUtf8("\t");
+            }
+            else
+            {
+                reportString << QString::fromUtf8("\n");
+            }
+        }
+    }
+
+    //// Close report file =====================================================
 
     reportFile.close();
 
@@ -532,4 +534,10 @@ void MainWindow::on_buttonTemplates_clicked()
             //TODO: error
         }
     }
+}
+
+void MainWindow::on_buttonOpenReportDir_clicked()
+{
+    QUrl url = QUrl::fromLocalFile(mSettings.getWorkPath());
+    QDesktopServices::openUrl(url);
 }

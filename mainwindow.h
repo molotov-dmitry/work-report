@@ -56,6 +56,8 @@ private slots:
 
     void on_buttonTemplates_clicked();
 
+    void on_buttonOpenReportDir_clicked();
+
 private:
     Ui::MainWindow *ui;
 
