@@ -10,6 +10,8 @@ DialogProjectTemplatesEdit::DialogProjectTemplatesEdit(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setWindowIcon(QIcon::fromTheme("folder-templates-symbolic", QIcon(":/icons/template.svg")));
+
     ui->buttonAdd->setIcon(QIcon::fromTheme("folder-add", QIcon(":/icons/project-add.svg")));
     ui->buttonAddSub->setIcon(QIcon::fromTheme("document-add", QIcon(":/icons/product-add.svg")));
     ui->buttonRemove->setIcon(QIcon::fromTheme("edit-delete-symbolic", QIcon(":/icons/delete.svg")));
@@ -219,6 +221,7 @@ void DialogProjectTemplatesEdit::moveItem(QTreeWidgetItem *item, int move)
     }
 
     ui->table->setCurrentItem(item, 0, QItemSelectionModel::ClearAndSelect);
+    ui->table->expandItem(item);
 }
 
 void DialogProjectTemplatesEdit::on_buttonSwitchMode_clicked()

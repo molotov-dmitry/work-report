@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->buttonRemove->setIcon(QIcon::fromTheme("edit-delete-symbolic", QIcon(":/icons/delete.svg")));
 
     ui->buttonSettings->setIcon(QIcon::fromTheme("preferences-system-symbolic", QIcon(":/icons/settings.svg")));
-    ui->buttonOpenReportDir->setIcon(QIcon::fromTheme("folder-templates-symbolic", QIcon(":/icons/template.svg")));
+    ui->buttonTemplates->setIcon(QIcon::fromTheme("folder-templates-symbolic", QIcon(":/icons/template.svg")));
 
     ui->buttonOpenReportDir->setIcon(QIcon::fromTheme("folder", QIcon(":/icons/folder.svg")));
 

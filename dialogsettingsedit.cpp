@@ -10,6 +10,8 @@ DialogSettingsEdit::DialogSettingsEdit(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->setWindowIcon(QIcon::fromTheme("preferences-system-symbolic", QIcon(":/icons/settings.svg")));
+
 #ifndef Q_OS_WIN
    ui->widgetOutlookPath->hide();
 #endif
