@@ -22,6 +22,8 @@
 #include <QUrlQuery>
 #include <QDesktopServices>
 
+#include "values.h"
+
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -168,7 +170,7 @@ void MainWindow::loadData()
 
     QByteArray taskByteArray = file.readAll();
 
-    //// Parse JSON ============================================================
+    //// Load JSON =============================================================
 
     QJsonDocument taskDocument = QJsonDocument::fromJson(taskByteArray);
 
@@ -176,7 +178,7 @@ void MainWindow::loadData()
 
     mDataExported = reportObject["exported"].toBool();
 
-    //// Check date rane -------------------------------------------------------
+    //// Check date range ------------------------------------------------------
 
     setupDateRange();
 
@@ -205,6 +207,8 @@ void MainWindow::loadData()
         ui->dateTo->setDate(to);
     }
 
+    //// Add tasks =============================================================
+
     foreach (const QJsonValue& value, reportObject["tasks"].toArray())
     {
         QJsonObject object = value.toObject();
@@ -212,17 +216,60 @@ void MainWindow::loadData()
         DialogTaskEdit dialog;
         dialog.setProjectTemplates(mProjectTemplates);
 
-        dialog.setTaskType(object["type"].toInt());
+        //// Get type ----------------------------------------------------------
+
+        QByteArray typeStr = object["type"].toString().toUtf8();
+
+        for (int i = 0; i < TASK_COUNT; ++i)
+        {
+            if (QByteArray(gValuesTaskTypes[i].jsonValue) == typeStr)
+            {
+                dialog.setTaskType(gValuesTaskTypes[i].value);
+            }
+        }
+
+        //// Get hours ---------------------------------------------------------
+
         dialog.setTaskHoursSpent(object["hours"].toInt());
+
+        //// Parse action ------------------------------------------------------
 
         if (dialog.getTaskType() == TASK_ACTION)
         {
+            //// Get string values ---------------------------------------------
+
             dialog.setTaskProject(object["project"].toString());
             dialog.setTaskProduct(object["product"].toString());
-            dialog.setTaskActionType(object["action"].toInt());
             dialog.setTaskDescription(object["description"].toString());
-            dialog.setTaskResult(object["result"].toInt());
+
+            //// Get action ----------------------------------------------------
+
+            QByteArray actionStr = object["action"].toString().toUtf8();
+
+            for (int i = 0; i < ACTION_COUNT; ++i)
+            {
+                if (QByteArray(gValuesActionTypes[i].jsonValue) == actionStr)
+                {
+                    dialog.setTaskActionType(gValuesActionTypes[i].value);
+                }
+            }
+
+            //// Get result ----------------------------------------------------
+
+            QByteArray resultStr = object["result"].toString().toUtf8();
+
+            for (int i = 0; i < RESULT_COUNT; ++i)
+            {
+                if (QByteArray(gValuesResults[i].jsonValue) == resultStr)
+                {
+                    dialog.setTaskResult(gValuesResults[i].value);
+                }
+            }
+
+            //// ---------------------------------------------------------------
         }
+
+        //// Add item ----------------------------------------------------------
 
         QTreeWidgetItem* item = new QTreeWidgetItem;
 
@@ -254,16 +301,37 @@ void MainWindow::saveData()
 
         QJsonObject taskObject;
 
-        taskObject["type"]  = item->data(COL_TYPE, Qt::UserRole).toInt();
+        int taskId = item->data(COL_TYPE, Qt::UserRole).toInt();
+        if (taskId >= TASK_COUNT)
+        {
+            //TODO: error
+            taskId = 0;
+        }
+
+        taskObject["type"]  = QString::fromUtf8(gValuesTaskTypes[taskId].jsonValue);
         taskObject["hours"] = item->data(COL_HOURS_SPENT, Qt::UserRole).toInt();
 
         if (item->data(COL_TYPE, Qt::UserRole).toInt() == TASK_ACTION)
         {
+            int actionId = item->data(COL_ACTION, Qt::UserRole).toInt();
+            if (actionId >= ACTION_COUNT)
+            {
+                //TODO: error
+                actionId = 0;
+            }
+
+            int resultId = item->data(COL_RESULT, Qt::UserRole).toInt();
+            if (resultId >= ACTION_COUNT)
+            {
+                //TODO: error
+                resultId = 0;
+            }
+
             taskObject["project"]     = item->text(COL_PROJECT);
             taskObject["product"]     = item->text(COL_PRODUCT);
-            taskObject["action"]      = item->data(COL_ACTION, Qt::UserRole).toInt();
+            taskObject["action"]      = QString::fromUtf8(gValuesActionTypes[actionId].jsonValue);
             taskObject["description"] = item->text(COL_DESCRIPTION);
-            taskObject["result"]      = item->data(COL_RESULT, Qt::UserRole).toInt();
+            taskObject["result"]      = QString::fromUtf8(gValuesResults[resultId].jsonValue);
         }
 
         taskArray.append(taskObject);

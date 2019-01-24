@@ -32,7 +32,8 @@ SOURCES += \
     dialogsettingsedit.cpp \
     projecttemplates.cpp \
     settingsdir.cpp \
-    dialogprojecttemplatesedit.cpp
+    dialogprojecttemplatesedit.cpp \
+    values.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -41,7 +42,8 @@ HEADERS += \
     dialogsettingsedit.h \
     projecttemplates.h \
     settingsdir.h \
-    dialogprojecttemplatesedit.h
+    dialogprojecttemplatesedit.h \
+    values.h
 
 FORMS += \
         mainwindow.ui \

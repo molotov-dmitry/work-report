@@ -2,6 +2,7 @@
 #include "ui_dialogtaskedit.h"
 
 #include <QToolButton>
+#include "values.h"
 
 DialogTaskEdit::DialogTaskEdit(QWidget *parent) :
     QDialog(parent),
@@ -25,6 +26,37 @@ DialogTaskEdit::DialogTaskEdit(QWidget *parent) :
 
         ui->layoutHourPresets->addWidget(toolButton);
     }
+
+    //// Populate comboboxes ===================================================
+
+    //// Task types ------------------------------------------------------------
+
+    ui->boxType->clear();
+
+    for (int i = 0; i < TASK_COUNT; ++i)
+    {
+        ui->boxType->addItem(QString::fromUtf8(gValuesTaskTypes[i].displayValue));
+    }
+
+    //// Action types ----------------------------------------------------------
+
+    ui->boxAction->clear();
+
+    for (int i = 0; i < ACTION_COUNT; ++i)
+    {
+        ui->boxAction->addItem(QString::fromUtf8(gValuesActionTypes[i].displayValue));
+    }
+
+    //// Result types ----------------------------------------------------------
+
+    ui->boxResult->clear();
+
+    for (int i = 0; i < RESULT_COUNT; ++i)
+    {
+        ui->boxResult->addItem(QString::fromUtf8(gValuesResults[i].displayValue));
+    }
+
+    //// =======================================================================
 }
 
 DialogTaskEdit::~DialogTaskEdit()

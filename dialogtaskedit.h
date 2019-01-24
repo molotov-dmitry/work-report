@@ -5,29 +5,6 @@
 
 #include "projecttemplates.h"
 
-enum TaskType
-{
-    TASK_ACTION,
-    TASK_VACATION,
-    TASK_ILLNESS
-};
-
-enum TaskActionType
-{
-    ACTION_CREATE,
-    ACTION_MODIFY,
-    ACTION_TEST,
-    ACTION_BUSINESS_TRIP,
-    ACTION_DOCS
-};
-
-enum TaskResult
-{
-    RESULT_DONE,
-    RESULT_DONE_PART,
-    RESULT_STUCK
-};
-
 namespace Ui {
 class DialogTaskEdit;
 }

@@ -39,36 +39,6 @@
            <height>32</height>
           </size>
          </property>
-         <item>
-          <property name="text">
-           <string>Разработка</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Доработка</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Тестирование</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Командировка</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Сдача в архив</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Другое...</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item row="2" column="0">
@@ -149,21 +119,6 @@
            <height>32</height>
           </size>
          </property>
-         <item>
-          <property name="text">
-           <string>Выполнено</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Выполнена часть</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Возникли трудности</string>
-          </property>
-         </item>
         </widget>
        </item>
       </layout>
@@ -180,21 +135,6 @@
        <height>32</height>
       </size>
      </property>
-     <item>
-      <property name="text">
-       <string>Задача</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Отпуск/отгул</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Больничный</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item row="3" column="0">
