@@ -71,6 +71,9 @@ private:
 
     QString getDateRangeString() const;
 
+    static QString toCsvValue(QString text);
+    static QString toCsvValue(const char* utf8ConstString);
+
 
 };
 

@@ -111,6 +111,27 @@ QString MainWindow::getDateRangeString() const
     return ui->dateFrom->date().toString("dd.MM.yyyy") + " - " + ui->dateTo->date().toString("dd.MM.yyyy");
 }
 
+QString MainWindow::toCsvValue(QString text)
+{
+    bool quoteString = text.contains(';') || text.contains('"');
+
+    text.replace('"', "\"\"");
+
+    if (quoteString)
+    {
+        text.append('"');
+        text.prepend('"');
+    }
+
+    return text;
+
+}
+
+QString MainWindow::toCsvValue(const char *utf8ConstString)
+{
+    return toCsvValue(QString::fromUtf8(utf8ConstString));
+}
+
 void MainWindow::loadData()
 {
     //// Get task file paths ===================================================
@@ -402,27 +423,27 @@ void MainWindow::exportData()
     //// Generate CSV ==========================================================
 
     QTextStream reportString(&reportFile);
-
+    reportString.setCodec("UTF-8");
     reportString.setGenerateByteOrderMark(true);
 
     const int count = ui->table->topLevelItemCount();
 
-    reportString << QString::fromUtf8("ФИО");
-    reportString << QString::fromUtf8("\t");
-    reportString << QString::fromUtf8("Временной период");
-    reportString << QString::fromUtf8("\t");
+    reportString << toCsvValue("ФИО");
+    reportString << ';';
+    reportString << toCsvValue("Временной период");
+    reportString << ';';
 
     for (int j = 0; j < COLUMN_COUNT; ++j)
-    {
-        reportString << ui->table->headerItem()->text(j);
+    {   
+        reportString << toCsvValue(ui->table->headerItem()->text(j));
 
         if (j < COLUMN_COUNT - 1)
         {
-            reportString << QString::fromUtf8("\t");
+            reportString << ';';
         }
         else
         {
-            reportString << QString::fromUtf8("\n");
+            reportString << '\n';
         }
     }
 
@@ -430,22 +451,22 @@ void MainWindow::exportData()
     {
         const QTreeWidgetItem* item = ui->table->topLevelItem(i);
 
-        reportString << mSettings.getUserName();
-        reportString << QString::fromUtf8("\t");
-        reportString << getDateRangeString();
-        reportString << QString::fromUtf8("\t");
+        reportString << toCsvValue(mSettings.getUserName());
+        reportString << ';';
+        reportString << toCsvValue(getDateRangeString());
+        reportString << ';';
 
         for (int j = 0; j < COLUMN_COUNT; ++j)
         {
-            reportString << item->text(j);
+            reportString << toCsvValue(item->text(j));
 
             if (j < COLUMN_COUNT - 1)
             {
-                reportString << QString::fromUtf8("\t");
+                reportString << ';';
             }
             else
             {
-                reportString << QString::fromUtf8("\n");
+                reportString << '\n';
             }
         }
     }
