@@ -109,4 +109,6 @@ bool ProjectTemplates::save()
     }
 
     projectsFile.close();
+
+    return true;
 }
