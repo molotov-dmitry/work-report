@@ -45,6 +45,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //// Icons =================================================================
 
+    this->setWindowIcon(QIcon::fromTheme("time-admin", QIcon(":/icons/clock.svg")));
+
     ui->buttonAdd->setIcon(QIcon::fromTheme("list-add-symbolic", QIcon(":/icons/add.svg")));
     ui->buttonEdit->setIcon(QIcon::fromTheme("document-edit-symbolic", QIcon(":/icons/edit.svg")));
     ui->buttonRemove->setIcon(QIcon::fromTheme("edit-delete-symbolic", QIcon(":/icons/delete.svg")));

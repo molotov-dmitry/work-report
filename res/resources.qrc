@@ -14,5 +14,6 @@
         <file>icons/tree.svg</file>
         <file>icons/folder.svg</file>
         <file>icons/template.svg</file>
+        <file>icons/clock.svg</file>
     </qresource>
 </RCC>
