@@ -61,9 +61,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    Settings mSettings;
-
+    Settings         mSettings;
     ProjectTemplates mProjectTemplates;
+    bool             mDataExported;
 
     void setupDateRange();
 

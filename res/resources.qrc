@@ -12,5 +12,7 @@
         <file>icons/table.svg</file>
         <file>icons/text.svg</file>
         <file>icons/tree.svg</file>
+        <file>icons/folder.svg</file>
+        <file>icons/template.svg</file>
     </qresource>
 </RCC>

@@ -28,7 +28,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    mDataExported(false)
 {
     ui->setupUi(this);
 
@@ -49,6 +50,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->buttonRemove->setIcon(QIcon::fromTheme("edit-delete-symbolic", QIcon(":/icons/delete.svg")));
 
     ui->buttonSettings->setIcon(QIcon::fromTheme("preferences-system-symbolic", QIcon(":/icons/settings.svg")));
+    ui->buttonOpenReportDir->setIcon(QIcon::fromTheme("folder-templates-symbolic", QIcon(":/icons/template.svg")));
+
+    ui->buttonOpenReportDir->setIcon(QIcon::fromTheme("folder", QIcon(":/icons/folder.svg")));
 
     ui->buttonExport->setIcon(QIcon::fromTheme("spreadsheet", QIcon(":/icons/table.svg")));
     ui->buttonSend->setIcon(QIcon::fromTheme("mail-send", QIcon(":/icons/email.svg")));
@@ -69,6 +73,11 @@ void MainWindow::setupDateRange()
 
     QDate dateFrom = currentDate.addDays(1 - currentDate.dayOfWeek());
     QDate dateTo   = dateFrom.addDays(4);
+
+    if (dateTo.month() != dateFrom.month() || dateTo.year() != dateFrom.year())
+    {
+        dateTo = dateTo.addDays(-dateTo.day());
+    }
 
     ui->dateFrom->setDate(dateFrom);
     ui->dateTo->setDate(dateTo);
@@ -161,7 +170,40 @@ void MainWindow::loadData()
 
     QJsonDocument taskDocument = QJsonDocument::fromJson(taskByteArray);
 
-    foreach (const QJsonValue& value, taskDocument.array())
+    QJsonObject reportObject = taskDocument.object();
+
+    mDataExported = reportObject["exported"].toBool();
+
+    //// Check date rane -------------------------------------------------------
+
+    setupDateRange();
+
+    QDate from = QDate::fromString(reportObject["from"].toString(), "dd.MM.yyyy");
+    QDate to   = QDate::fromString(reportObject["to"].toString(), "dd.MM.yyyy");
+
+    bool pastWeek = ((from.weekNumber() != ui->dateFrom->date().weekNumber()) || from.month() != ui->dateFrom->date().month());
+
+    if (mDataExported && pastWeek)
+    {
+        //Not need to load already exported data from past week
+        return;
+    }
+    else if (pastWeek && not mDataExported)
+    {
+        QMessageBox::warning(this, QString::fromUtf8("Экспорт"), QString::fromUtf8("Данные за прошлую неделю не были экспортированы"));
+    }
+
+    if (from.isValid())
+    {
+        ui->dateFrom->setDate(from);
+    }
+
+    if (to.isValid())
+    {
+        ui->dateTo->setDate(to);
+    }
+
+    foreach (const QJsonValue& value, reportObject["tasks"].toArray())
     {
         QJsonObject object = value.toObject();
 
@@ -194,6 +236,12 @@ void MainWindow::saveData()
 {
     //// Generate JSON =========================================================
 
+    QJsonObject reportObject;
+
+    reportObject["from"]     = ui->dateFrom->date().toString("dd.MM.yyyy");
+    reportObject["to"]       = ui->dateTo->date().toString("dd.MM.yyyy");
+    reportObject["exported"] = mDataExported;
+
     QJsonArray taskArray;
 
     const int count = ui->table->topLevelItemCount();
@@ -220,7 +268,9 @@ void MainWindow::saveData()
 
     }
 
-    QJsonDocument taskDocument(taskArray);
+    reportObject["tasks"] = taskArray;
+
+    QJsonDocument reportDocument(reportObject);
 
     //// Get task file paths ===================================================
 
@@ -232,7 +282,7 @@ void MainWindow::saveData()
 
         if (not taskDir.cd(mSettings.getWorkPath()))
         {
-            //TODO: error
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для отчетов"));
             return;
         }
     }
@@ -249,11 +299,11 @@ void MainWindow::saveData()
 
     if (not taskFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        //TODO: error
+        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно записать файл отчета"));
         return;
     }
 
-    taskFile.write(taskDocument.toJson());
+    taskFile.write(reportDocument.toJson());
 
     taskFile.close();
 
@@ -283,6 +333,7 @@ void MainWindow::on_actionTaskNew_triggered()
 
         ui->table->addTopLevelItem(item);
 
+        mDataExported = false;
         saveData();
     }
 }
@@ -314,6 +365,7 @@ void MainWindow::on_actionTaskEdit_triggered()
     {
         setItem(*item, dialog);
 
+        mDataExported = false;
         saveData();
     }
 }
@@ -331,6 +383,7 @@ void MainWindow::on_actionTaskDelete_triggered()
         return;
     }
 
+    mDataExported = false;
     delete item;
 
     saveData();
@@ -393,11 +446,24 @@ void MainWindow::exportData()
 
     if (not taskDir.cd(mSettings.getWorkPath()))
     {
-        taskDir.mkdir(mSettings.getWorkPath());
+        taskDir.mkpath(mSettings.getWorkPath());
 
         if (not taskDir.cd(mSettings.getWorkPath()))
         {
-            //TODO: error
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для отчетов"));
+            return;
+        }
+    }
+
+    QString monthDir = ui->dateFrom->date().toString("yyyy-MM");
+
+    if (not taskDir.cd(monthDir))
+    {
+        taskDir.mkdir(monthDir);
+
+        if (not taskDir.cd(monthDir))
+        {
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для отчетов"));
             return;
         }
     }
@@ -416,7 +482,7 @@ void MainWindow::exportData()
 
     if (not reportFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        //TODO: error
+        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать файл отчета"));
         return;
     }
 
@@ -479,6 +545,11 @@ void MainWindow::exportData()
 
     QFile::remove(reportPathBak);
 
+    //// Set data exported flag ================================================
+
+    mDataExported = true;
+    saveData();
+
     //// =======================================================================
 }
 
@@ -492,7 +563,15 @@ void MainWindow::on_buttonSend_clicked()
 
     if (not taskDir.cd(mSettings.getWorkPath()))
     {
-        //TODO: error
+        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно открыть директорию для отчетов"));
+        return;
+    }
+
+    QString monthDir = ui->dateFrom->date().toString("yyyy-MM");
+
+    if (not taskDir.cd(monthDir))
+    {
+        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно открыть директорию для отчетов"));
         return;
     }
 
@@ -519,10 +598,8 @@ void MainWindow::on_buttonSend_clicked()
     arguments << "/c" << "ipm.note" << "/m" << mSettings.getMailTo() +"&subject=Отчет за неделю" << "/a" << filePath;
 
     QProcess outlook;
-    outlook.setProgram(program);
-    outlook.setArguments(arguments);
 
-    outlook.startDetached();
+    outlook.startDetached(program, arguments);
 
 #endif
 }
@@ -552,7 +629,7 @@ void MainWindow::on_buttonTemplates_clicked()
 
         if (not mProjectTemplates.save())
         {
-            //TODO: error
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно сохранить файл шаблонов"));
         }
     }
 }
