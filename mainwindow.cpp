@@ -239,7 +239,7 @@ void MainWindow::saveData()
     //// Make file hidden (for Windows) ========================================
 
 #ifdef Q_OS_WIN
-    SetFileAttributes(taskPath.toStdString().c_str(), FILE_ATTRIBUTE_HIDDEN);
+    SetFileAttributes(reinterpret_cast<LPCWSTR>(taskPath.utf16()), FILE_ATTRIBUTE_HIDDEN);
 #endif
 
     //// Remove backup file ====================================================
