@@ -74,6 +74,11 @@ private:
     static QString toCsvValue(QString text);
     static QString toCsvValue(const char* utf8ConstString);
 
+private slots:
+
+    void updateExportStatus();
+    void updateTotalHours();
+
 
 };
 

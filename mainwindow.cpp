@@ -43,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->table, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(on_actionTaskEdit_triggered()));
 
+    connect(ui->dateFrom, SIGNAL(userDateChanged(const QDate &)), this, SLOT(updateTotalHours()));
+    connect(ui->dateTo,   SIGNAL(userDateChanged(const QDate &)), this, SLOT(updateTotalHours()));
+
     setupDateRange();
 
     //// Icons =================================================================
@@ -64,6 +67,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //// =======================================================================
 
     loadData();
+    updateTotalHours();
 }
 
 MainWindow::~MainWindow()
@@ -145,6 +149,42 @@ QString MainWindow::toCsvValue(const char *utf8ConstString)
     return toCsvValue(QString::fromUtf8(utf8ConstString));
 }
 
+void MainWindow::updateExportStatus()
+{
+    ui->labelExportStatus->setHidden(mDataExported);
+}
+
+void MainWindow::updateTotalHours()
+{
+    int hoursWork = 0;
+    int hoursTotal = (ui->dateFrom->date().daysTo(ui->dateTo->date()) + 1) * 8;
+
+    const int count = ui->table->topLevelItemCount();
+
+    for (int i = 0; i < count; ++i)
+    {
+        const QTreeWidgetItem* item = ui->table->topLevelItem(i);
+
+        hoursWork += item->data(COL_HOURS_SPENT, Qt::UserRole).toInt();
+    }
+
+    ui->labelTotalHours->setText(QString::asprintf("%d / %d", hoursWork, hoursTotal));
+
+    QPalette labelPalette = this->palette();
+
+    if (hoursWork == hoursTotal)
+    {
+        labelPalette.setColor(QPalette::WindowText, QColor(56, 142, 60));
+    }
+    else
+    {
+        labelPalette.setColor(QPalette::WindowText, QColor(183, 28, 28));
+    }
+
+    ui->labelTotalHours->setPalette(labelPalette);
+
+}
+
 void MainWindow::loadData()
 {
     //// Get task file paths ===================================================
@@ -177,6 +217,7 @@ void MainWindow::loadData()
     QJsonObject reportObject = taskDocument.object();
 
     mDataExported = reportObject["exported"].toBool();
+    updateExportStatus();
 
     //// Check date range ------------------------------------------------------
 
@@ -404,7 +445,10 @@ void MainWindow::on_actionTaskNew_triggered()
         ui->table->addTopLevelItem(item);
 
         mDataExported = false;
+        updateExportStatus();
         saveData();
+
+        updateTotalHours();
     }
 }
 
@@ -436,7 +480,10 @@ void MainWindow::on_actionTaskEdit_triggered()
         setItem(*item, dialog);
 
         mDataExported = false;
+        updateExportStatus();
         saveData();
+
+        updateTotalHours();
     }
 }
 
@@ -454,9 +501,12 @@ void MainWindow::on_actionTaskDelete_triggered()
     }
 
     mDataExported = false;
+    updateExportStatus();
     delete item;
 
     saveData();
+
+    updateTotalHours();
 }
 
 void MainWindow::on_buttonSettings_clicked()
@@ -618,6 +668,7 @@ void MainWindow::exportData()
     //// Set data exported flag ================================================
 
     mDataExported = true;
+    updateExportStatus();
     saveData();
 
     //// =======================================================================

@@ -161,6 +161,40 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QLabel" name="labelExportStatus">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#b71c1c;&quot;&gt;Изменено&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Общее количество часов:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelTotalHours">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -295,7 +329,7 @@
      <x>0</x>
      <y>0</y>
      <width>832</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>
