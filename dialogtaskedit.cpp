@@ -12,7 +12,7 @@ DialogTaskEdit::DialogTaskEdit(QWidget *parent) :
 
     this->setWindowIcon(QIcon::fromTheme("document-edit-symbolic", QIcon(":/icons/edit.svg")));
 
-    const int HOUR_PRESETS[] = {1, 2, 4, 8, 16, 32, 40};
+    const int HOUR_PRESETS[] = {4, 8, 16, 24, 32, 40};
     const int HOUR_PRESET_COUNT = sizeof(HOUR_PRESETS) / sizeof(HOUR_PRESETS[0]);
 
     for (int i = 0; i < HOUR_PRESET_COUNT; ++i)
