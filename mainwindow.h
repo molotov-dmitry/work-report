@@ -79,7 +79,8 @@ private slots:
     void updateExportStatus();
     void updateTotalHours();
 
-
+    void dateRangeChanged();
+    void on_table_itemSelectionChanged();
 };
 
 #endif // MAINWINDOW_H

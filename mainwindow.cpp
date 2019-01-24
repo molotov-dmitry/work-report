@@ -5,6 +5,8 @@
 #include "dialogsettingsedit.h"
 #include "dialogprojecttemplatesedit.h"
 
+#include <QShortcut>
+
 #include <QDate>
 #include <QMessageBox>
 
@@ -43,10 +45,28 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->table, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)), this, SLOT(on_actionTaskEdit_triggered()));
 
-    connect(ui->dateFrom, SIGNAL(userDateChanged(const QDate &)), this, SLOT(updateTotalHours()));
-    connect(ui->dateTo,   SIGNAL(userDateChanged(const QDate &)), this, SLOT(updateTotalHours()));
+    connect(ui->dateFrom, SIGNAL(userDateChanged(const QDate &)), this, SLOT(dateRangeChanged()));
+    connect(ui->dateTo,   SIGNAL(userDateChanged(const QDate &)), this, SLOT(dateRangeChanged()));
 
-    setupDateRange();
+    //// Shortcuts =============================================================
+
+    QShortcut *shortcutAdd1 = new QShortcut(Qt::Key_Insert, this);
+    QObject::connect(shortcutAdd1, SIGNAL(activated()), this, SLOT(on_actionTaskNew_triggered()));
+
+    QShortcut *shortcutAdd2 = new QShortcut(Qt::Key_Plus, this);
+    QObject::connect(shortcutAdd2, SIGNAL(activated()), this, SLOT(on_actionTaskNew_triggered()));
+
+    QShortcut *shortcutEdit1 = new QShortcut(Qt::CTRL + 'E', this);
+    QObject::connect(shortcutEdit1, SIGNAL(activated()), this, SLOT(on_actionTaskEdit_triggered()));
+
+    QShortcut *shortcutEdit2 = new QShortcut(Qt::Key_Space, this);
+    QObject::connect(shortcutEdit2, SIGNAL(activated()), this, SLOT(on_actionTaskEdit_triggered()));
+
+    QShortcut *shortcutDelete1 = new QShortcut(Qt::Key_Delete, this);
+    QObject::connect(shortcutDelete1, SIGNAL(activated()), this, SLOT(on_actionTaskDelete_triggered()));
+
+    QShortcut *shortcutDelete2 = new QShortcut(Qt::Key_Minus, this);
+    QObject::connect(shortcutDelete2, SIGNAL(activated()), this, SLOT(on_actionTaskDelete_triggered()));
 
     //// Icons =================================================================
 
@@ -65,6 +85,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->buttonSend->setIcon(QIcon::fromTheme("mail-send", QIcon(":/icons/email.svg")));
 
     //// =======================================================================
+
+    setupDateRange();
 
     loadData();
     updateTotalHours();
@@ -183,6 +205,11 @@ void MainWindow::updateTotalHours()
 
     ui->labelTotalHours->setPalette(labelPalette);
 
+}
+
+void MainWindow::dateRangeChanged()
+{
+    updateTotalHours();
 }
 
 void MainWindow::loadData()
@@ -454,7 +481,13 @@ void MainWindow::on_actionTaskNew_triggered()
 
 void MainWindow::on_actionTaskEdit_triggered()
 {
-    QTreeWidgetItem* item = ui->table->currentItem();
+    QList<QTreeWidgetItem*> items = ui->table->selectedItems();
+    if (items.isEmpty())
+    {
+        return;
+    }
+
+    QTreeWidgetItem* item = items.first();
     if (item == Q_NULLPTR)
     {
         return;
@@ -489,8 +522,8 @@ void MainWindow::on_actionTaskEdit_triggered()
 
 void MainWindow::on_actionTaskDelete_triggered()
 {
-    QTreeWidgetItem* item = ui->table->currentItem();
-    if (item == Q_NULLPTR)
+    QList<QTreeWidgetItem*> items = ui->table->selectedItems();
+    if (items.isEmpty())
     {
         return;
     }
@@ -502,7 +535,11 @@ void MainWindow::on_actionTaskDelete_triggered()
 
     mDataExported = false;
     updateExportStatus();
-    delete item;
+
+    foreach (QTreeWidgetItem* item, items)
+    {
+        delete item;
+    }
 
     saveData();
 
@@ -759,4 +796,12 @@ void MainWindow::on_buttonOpenReportDir_clicked()
 {
     QUrl url = QUrl::fromLocalFile(mSettings.getWorkPath());
     QDesktopServices::openUrl(url);
+}
+
+void MainWindow::on_table_itemSelectionChanged()
+{
+    bool haveSelectedItems = (ui->table->selectedItems().count() > 0);
+
+    ui->buttonEdit->setEnabled(haveSelectedItems);
+    ui->buttonRemove->setEnabled(haveSelectedItems);
 }
