@@ -90,6 +90,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     loadData();
     updateTotalHours();
+
+    //// Setup table ===========================================================
+
+    ui->table->header()->setStretchLastSection(false);
+
+    ui->table->header()->setSectionResizeMode(COL_HOURS_SPENT, QHeaderView::ResizeToContents);
+    ui->table->header()->setSectionResizeMode(COL_DESCRIPTION, QHeaderView::Stretch);
+    ui->table->header()->setSectionResizeMode(COL_RESULT,      QHeaderView::ResizeToContents);
 }
 
 MainWindow::~MainWindow()
@@ -101,8 +109,18 @@ void MainWindow::setupDateRange()
 {
     QDate currentDate = QDate::currentDate();
 
-    QDate dateFrom = currentDate.addDays(1 - currentDate.dayOfWeek());
-    QDate dateTo   = dateFrom.addDays(4);
+    QDate dateFrom;
+
+    if (currentDate.day() >= currentDate.dayOfWeek())
+    {
+        dateFrom = currentDate.addDays(1 - currentDate.dayOfWeek());
+    }
+    else
+    {
+        dateFrom = currentDate.addDays(1 - currentDate.day());
+    }
+
+    QDate dateTo = dateFrom.addDays(5 - dateFrom.dayOfWeek());
 
     if (dateTo.month() != dateFrom.month() || dateTo.year() != dateFrom.year())
     {
@@ -115,6 +133,8 @@ void MainWindow::setupDateRange()
 
 void MainWindow::setItem(QTreeWidgetItem &item, const DialogTaskEdit &dialog)
 {
+    item.setIcon(COL_TYPE, QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
+
     item.setData(COL_TYPE, Qt::UserRole, dialog.getTaskType());
     item.setText(COL_TYPE, dialog.getTaskTypeString());
 
