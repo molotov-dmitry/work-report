@@ -1,4 +1,4 @@
-#include "dialogtaskedit.h"
+﻿#include "dialogtaskedit.h"
 #include "ui_dialogtaskedit.h"
 
 #include <QToolButton>

@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include "dialogtaskedit.h"
@@ -6,7 +6,7 @@
 #include "dialogprojecttemplatesedit.h"
 
 #include <QShortcut>
-
+#include <QTimer>
 #include <QDate>
 #include <QMessageBox>
 
@@ -84,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->buttonExport->setIcon(QIcon::fromTheme("spreadsheet", QIcon(":/icons/table.svg")));
     ui->buttonSend->setIcon(QIcon::fromTheme("mail-send", QIcon(":/icons/email.svg")));
 
-    //// =======================================================================
+    //// Load data =============================================================
 
     setupDateRange();
 
@@ -98,6 +98,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->table->header()->setSectionResizeMode(COL_HOURS_SPENT, QHeaderView::ResizeToContents);
     ui->table->header()->setSectionResizeMode(COL_DESCRIPTION, QHeaderView::Stretch);
     ui->table->header()->setSectionResizeMode(COL_RESULT,      QHeaderView::ResizeToContents);
+
+    //// Launch setup when not configured ======================================
+
+    if (mSettings.getUserName().isEmpty() || mSettings.getMailTo().isEmpty())
+    {
+        QTimer::singleShot(0, this, SIGNAL(on_buttonSettings_clicked()));
+    }
 }
 
 MainWindow::~MainWindow()
@@ -767,8 +774,16 @@ void MainWindow::on_buttonSend_clicked()
     url.setQuery(query);
 
     QDesktopServices::openUrl(url);
+
 #endif
 #ifdef Q_OS_WIN
+
+    if (mSettings.getOutlookPath().isEmpty())
+    {
+        QMessageBox::warning(this, QString::fromUtf8("Отправка"), QString::fromUtf8("Не указан путь к программе Outlook"));
+        return;
+    }
+
     QString program;
     QStringList arguments;
 

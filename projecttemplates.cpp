@@ -1,4 +1,4 @@
-#include "projecttemplates.h"
+﻿#include "projecttemplates.h"
 
 #include "settingsdir.h"
 
