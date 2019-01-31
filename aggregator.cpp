@@ -3,25 +3,14 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QTextStream>
+#include <QDebug>
 
 #include "values.h"
+#include "reportentry.h"
 
-struct ReportEntry
-{
-    QString name;
-
-//    QDate   from;
-//    QDate   to;
-
-    uint    type;
-    uint    hours;
-
-    QString project;
-    QString product;
-    uint    action;
-    QString description;
-    uint    result;
-};
+#include "reportbuilderstatistics.h"
+#include "reportbuildertotalbydate.h"
+#include "reportbuildertotalreduced.h"
 
 uint findId(const QString& value, const Values* values, uint count)
 {
@@ -57,6 +46,7 @@ bool toReportEntry(const QStringList& line, ReportEntry& entry)
 
     if (line.size() != COL_COUNT)
     {
+        qCritical() << "Wrong column count: " << line.size();
         return false;
     }
 
@@ -69,13 +59,15 @@ bool toReportEntry(const QStringList& line, ReportEntry& entry)
     entry.hours = line.at(COL_HOURS).toUInt(&ok);
     if (not ok)
     {
+        qCritical() << "Wrong hours value: " << line.at(COL_HOURS);
         return false;
     }
 
-    entry.type = findId(line.at(COL_TYPE), gValuesTaskTypes, TASK_COUNT);
+    entry.type = (TaskType)findId(line.at(COL_TYPE), gValuesTaskTypes, TASK_COUNT);
 
     if (entry.type == TASK_COUNT)
     {
+        qCritical() << "Wrong type value: " << line.at(COL_TYPE);
         return false;
     }
 
@@ -89,19 +81,21 @@ bool toReportEntry(const QStringList& line, ReportEntry& entry)
 
         //// Action ----------------------------------------------------------------
 
-        entry.action = findId(line.at(COL_ACTION), gValuesActionTypes, ACTION_COUNT);
+        entry.action = (TaskActionType)findId(line.at(COL_ACTION), gValuesActionTypes, ACTION_COUNT);
 
         if (entry.action == ACTION_COUNT)
         {
+            qCritical() << "Wrong action value: " << line.at(COL_ACTION);
             return false;
         }
 
         //// Result ----------------------------------------------------------------
 
-        entry.result = findId(line.at(COL_RESULT), gValuesResults, RESULT_COUNT);;
+        entry.result = (TaskResult)findId(line.at(COL_RESULT), gValuesResults, RESULT_COUNT);;
 
         if (entry.result == RESULT_COUNT)
         {
+            qCritical() << "Wrong result value: " << line.at(COL_RESULT);
             return false;
         }
     }
@@ -150,6 +144,7 @@ bool splitReportLine(const QString& line, QStringList &lines)
                 }
                 else
                 {
+                    qCritical() << "Wrong symbol after quote: " << c;
                     return false;
                 }
             }
@@ -196,11 +191,13 @@ bool readReport(const QString& reportPath, QList<ReportEntry>& entries)
 
     if (not reportFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        //TODO: error
+        qCritical() << "Failed to open report file";
         return false;
     }
 
     bool readTitle = false;
+
+    int lineNumber  = 1;
 
     QTextStream stream(&reportFile);
     while (not stream.atEnd())
@@ -209,6 +206,8 @@ bool readReport(const QString& reportPath, QList<ReportEntry>& entries)
 
         if (not readTitle)
         {
+            ++lineNumber;
+
             readTitle = true;
             continue;
         }
@@ -217,6 +216,8 @@ bool readReport(const QString& reportPath, QList<ReportEntry>& entries)
 
         if (not splitReportLine(line, lines))
         {
+            qCritical() << "In line " << lineNumber;
+
             return false;
         }
 
@@ -224,10 +225,14 @@ bool readReport(const QString& reportPath, QList<ReportEntry>& entries)
 
         if (not toReportEntry(lines, entry))
         {
+            qCritical() << "In line " << lineNumber;
+
             return false;
         }
 
         entries.append(entry);
+
+        ++lineNumber;
 
     }
 
@@ -249,11 +254,11 @@ int main(int argc, char *argv[])
         {
             if (i == argc - 1)
             {
-                //TODO: error
+                qCritical() << "Missing value for '-d' argument";
             }
             if (not reportDirectory.cd(QString::fromUtf8(argv[i + 1])))
             {
-                //TODO: error
+                qCritical() << "Failed to change directory";
                 return 1;
             }
         }
@@ -263,7 +268,7 @@ int main(int argc, char *argv[])
 
     QStringList reports;
 
-    QDirIterator it(reportDirectory.absolutePath(), QStringList() << QString::fromUtf8("Отчет ??.??.???? - ??.??.????.csv"), QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator it(reportDirectory.absolutePath(), QStringList() << QString::fromUtf8("Отчет ??.??.???? - ??.??.????.csv"), QDir::Files, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
     while (it.hasNext())
     {
         reports << it.next();
@@ -279,9 +284,46 @@ int main(int argc, char *argv[])
     {
         if (not readReport(report, entries))
         {
+            qCritical() << "In file " << report;
             return 1;
         }
     }
+
+    //// Sort reports ==========================================================
+
+    std::sort(entries.begin(), entries.end(), compareReportEntries);
+
+    //// Print statistics ======================================================
+
+    printStatistics(entries);
+
+    //// Build total by date ===================================================
+
+    QFile fileReportTotal(reportDirectory.absoluteFilePath("total.csv"));
+    if (not fileReportTotal.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qCritical() << "Failed to open total.csv fro write";
+        return 1;
+    }
+
+    QTextStream streamTotalByDate(&fileReportTotal);
+    streamTotalByDate.setGenerateByteOrderMark(true);
+
+    BuildReportTotalBydate(entries, streamTotalByDate);
+
+    //// Build reduced =========================================================
+
+    QFile fileReportReduced(reportDirectory.absoluteFilePath("reduced.csv"));
+    if (not fileReportReduced.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qCritical() << "Failed to open total.csv fro write";
+        return 1;
+    }
+
+    QTextStream streamReduced(&fileReportReduced);
+    streamReduced.setGenerateByteOrderMark(true);
+
+    BuildReportReduced(entries, streamReduced);
 
     //// =======================================================================
 

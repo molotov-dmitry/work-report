@@ -16,6 +16,14 @@ UI_DIR      = build/gen_ui
 RC_ICONS = res/icons/clock.ico
 
 SOURCES += values.cpp \
-    aggregator.cpp
+    aggregator.cpp \
+    reportentry.cpp \
+    reportbuildertotalbydate.cpp \
+    reportbuilderstatistics.cpp \
+    reportbuildertotalreduced.cpp
 
-HEADERS += values.h
+HEADERS += values.h \
+    reportentry.h \
+    reportbuildertotalbydate.h \
+    reportbuilderstatistics.h \
+    reportbuildertotalreduced.h
