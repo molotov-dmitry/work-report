@@ -1,5 +1,3 @@
-#include <QApplication>
-
 #include <QDir>
 #include <QDirIterator>
 #include <QTextStream>

@@ -39,7 +39,6 @@ void BuildReportTotalBydate(const QList<ReportEntry> &list, QTextStream& stream)
             stream << ";";
             stream << ";";
             stream << ";";
-            stream;
         }
 
         stream << endl;
