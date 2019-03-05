@@ -3,12 +3,12 @@
 ROOT_PATH="$(cd "$(dirname "$0")" && pwd)"
 cd "${ROOT_PATH}" || exit 1
 
-sudo mkdir -p /usr/local/bin
-sudo cp -f work-report /usr/local/bin/
+mkdir -p /usr/local/bin
+cp -f work-report /usr/local/bin/
 
-mkdir -p "$HOME/.local/share/applications/"
+mkdir -p "/usr/share/applications/"
 
-cat << EOF > "$HOME/.local/share/applications/work-report.desktop"
+cat << EOF > "/usr/share/applications/work-report.desktop"
 [Desktop Entry]
 Version=1.0
 
