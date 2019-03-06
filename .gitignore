@@ -1,7 +1,12 @@
+/build
 /*.pro.user
 /*.pro.user.*
-/build
 /Makefile
 /qrc_resources.cpp
 /work-report
 /.qmake.stash
+/report-builder/build
+/report-builder/*.pro.user
+/report-builder/*.pro.user.*
+/report-builder/Makefile
+/report-builder/report-builder
