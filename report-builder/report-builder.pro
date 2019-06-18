@@ -5,7 +5,7 @@ TEMPLATE = app
 
 DEFINES  += QT_DEPRECATED_WARNINGS
 
-INCLUDEPATH += ..
+INCLUDEPATH += .. ../common
 
 OBJECTS_DIR = build/report-builder/obj
 MOC_DIR     = build/report-builder/moc
@@ -16,10 +16,10 @@ SOURCES += ../values.cpp \
     reportbuilderstatistics.cpp \
     reportbuildertotalbydate.cpp \
     reportbuildertotalreduced.cpp \
-    reportentry.cpp
+    ../common/reportentry.cpp
 
 HEADERS += ../values.h \
     reportbuilderstatistics.h \
     reportbuildertotalbydate.h \
     reportbuildertotalreduced.h \
-    reportentry.h
+    ../common/reportentry.h
