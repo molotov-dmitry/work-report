@@ -37,7 +37,9 @@ SOURCES += \
     projecttemplates.cpp \
     settingsdir.cpp \
     dialogprojecttemplatesedit.cpp \
-    values.cpp
+    values.cpp \
+    common/reportentry.cpp \
+    common/reportimport.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -47,7 +49,9 @@ HEADERS += \
     projecttemplates.h \
     settingsdir.h \
     dialogprojecttemplatesedit.h \
-    values.h
+    values.h \
+    common/reportentry.h \
+    common/reportimport.h
 
 FORMS += \
         mainwindow.ui \
