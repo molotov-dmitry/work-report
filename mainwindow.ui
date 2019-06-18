@@ -328,9 +328,25 @@
      <x>0</x>
      <y>0</y>
      <width>844</width>
-     <height>24</height>
+     <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuAfqk">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="actionImport"/>
+   </widget>
+   <widget class="QMenu" name="menuPflfxb">
+    <property name="title">
+     <string>Задачи</string>
+    </property>
+    <addaction name="actionTaskNew"/>
+    <addaction name="actionTaskEdit"/>
+    <addaction name="actionTaskDelete"/>
+   </widget>
+   <addaction name="menuAfqk"/>
+   <addaction name="menuPflfxb"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -349,9 +365,6 @@
    <property name="text">
     <string>Создать задачу</string>
    </property>
-   <property name="shortcut">
-    <string>Ins</string>
-   </property>
   </action>
   <action name="actionTaskEdit">
    <property name="icon">
@@ -360,9 +373,6 @@
    </property>
    <property name="text">
     <string>Редактировать</string>
-   </property>
-   <property name="shortcut">
-    <string>E</string>
    </property>
   </action>
   <action name="actionTaskDelete">
@@ -373,8 +383,17 @@
    <property name="text">
     <string>Удалить</string>
    </property>
+  </action>
+  <action name="actionImport">
+   <property name="icon">
+    <iconset theme="document-import">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Импорт</string>
+   </property>
    <property name="shortcut">
-    <string>Del</string>
+    <string>Ctrl+O</string>
    </property>
   </action>
  </widget>

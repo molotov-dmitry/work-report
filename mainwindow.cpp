@@ -9,6 +9,7 @@
 #include <QTimer>
 #include <QDate>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include <QDebug>
 
@@ -25,6 +26,8 @@
 #include <QDesktopServices>
 
 #include "values.h"
+#include "common/reportentry.h"
+#include "common/reportimport.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -684,7 +687,7 @@ void MainWindow::exportData()
     reportString << ';';
 
     for (int j = 0; j < COLUMN_COUNT; ++j)
-    {   
+    {
         reportString << toCsvValue(ui->table->headerItem()->text(j));
 
         if (j < COLUMN_COUNT - 1)
@@ -839,4 +842,105 @@ void MainWindow::on_table_itemSelectionChanged()
 
     ui->buttonEdit->setEnabled(haveSelectedItems);
     ui->buttonRemove->setEnabled(haveSelectedItems);
+}
+
+void MainWindow::on_actionImport_triggered()
+{
+    if (not mDataExported)
+    {
+        if (QMessageBox::question(this,
+                                  QString::fromUtf8("Импорт"),
+                                  QString::fromUtf8("Не экспортированные изменения будут потеряны. Продолжить?")) != QMessageBox::Yes)
+        {
+            return;
+        }
+    }
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    QString::fromUtf8("Импорт"),
+                                                    mSettings.getWorkPath(), "*.csv");
+
+    if (fileName.isEmpty())
+    {
+        return;
+    }
+
+    ReportImport importer;
+    QList<ReportEntry> entries;
+
+    if (not importer.readReport(fileName, entries))
+    {
+        QString error = importer.lastError();
+
+        if (importer.lastErrorLine() > -1)
+        {
+            error.append(QString::asprintf("\nat line %d",
+                                           importer.lastErrorLine()));
+        }
+
+        QMessageBox::critical(this,
+                              QString::fromUtf8("Импорт"),
+                              error);
+
+        return;
+    }
+
+    if (entries.isEmpty())
+    {
+        QMessageBox::warning(this,
+                             QString::fromUtf8("Импорт"),
+                             QString::fromUtf8("Отчёт пуст"));
+
+        return;
+    }
+
+    ui->dateFrom->setDate(entries.first().from);
+    ui->dateTo->setDate(entries.last().to);
+
+    ui->table->clear();
+
+    foreach (const ReportEntry& report, entries)
+    {
+        QTreeWidgetItem* item = new QTreeWidgetItem;
+
+        item->setIcon(COL_TYPE, QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
+
+        item->setData(COL_TYPE, Qt::UserRole, report.type);
+        item->setText(COL_TYPE, QString::fromUtf8(gValuesTaskTypes[report.type].displayValue));
+
+        item->setData(COL_HOURS_SPENT, Qt::UserRole, report.hours);
+        item->setText(COL_HOURS_SPENT, QString::number(report.hours));
+
+        if (report.type == TASK_ACTION)
+        {
+            item->setText(COL_PROJECT, report.project);
+
+            item->setText(COL_PRODUCT, report.product);
+
+            item->setData(COL_ACTION, Qt::UserRole, report.action);
+            item->setText(COL_ACTION, QString::fromUtf8(gValuesActionTypes[report.action].displayValue));
+
+            item->setText(COL_DESCRIPTION, report.description);
+
+            item->setData(COL_RESULT, Qt::UserRole, report.result);
+            item->setText(COL_RESULT, QString::fromUtf8(gValuesResults[report.result].displayValue));
+        }
+        else
+        {
+            item->setText(COL_PROJECT, QString());
+            item->setText(COL_PRODUCT, QString());
+            item->setText(COL_ACTION, QString());
+            item->setText(COL_DESCRIPTION, QString());
+            item->setText(COL_RESULT, QString());
+        }
+
+        ui->table->addTopLevelItem(item);
+    }
+
+    mDataExported = true;
+
+    updateExportStatus();
+    saveData();
+
+    updateTotalHours();
 }
