@@ -179,7 +179,7 @@ QString MainWindow::getDateRangeString() const
 
 QString MainWindow::toCsvValue(QString text)
 {
-    bool quoteString = text.contains(';') || text.contains('"');
+    bool quoteString = text.contains(';') || text.contains('"') || text.contains(",");
 
     text.replace('"', "\"\"");
 
