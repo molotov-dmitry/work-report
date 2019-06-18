@@ -101,7 +101,7 @@ QString DialogTaskEdit::getTaskActionTypeString() const
 
 QString DialogTaskEdit::getTaskDescription() const
 {
-    return ui->editDescription->text();
+    return ui->editDescription->text().replace("\n", "\r");
 }
 
 int DialogTaskEdit::getTaskResult() const
