@@ -24,7 +24,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 OBJECTS_DIR = build/obj
 MOC_DIR     = build/moc
-UI_DIR      = build/gen_ui
+UI_DIR      = build/ui
+RCC_DIR     = build/rc
 
 RC_ICONS = res/icons/clock.ico
 
@@ -61,3 +62,11 @@ FORMS += \
 
 RESOURCES += \
     res/resources.qrc
+
+unix: target.path = /usr/local/bin
+!isEmpty(target.path): INSTALLS += target
+
+unix: desktop.path = /usr/share/applications
+unix: desktop.files = work-report.desktop
+
+!isEmpty(desktop.path): INSTALLS += desktop
