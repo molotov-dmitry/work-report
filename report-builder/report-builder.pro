@@ -7,9 +7,10 @@ DEFINES  += QT_DEPRECATED_WARNINGS
 
 INCLUDEPATH += .. ../common
 
-OBJECTS_DIR = build/report-builder/obj
-MOC_DIR     = build/report-builder/moc
-UI_DIR      = build/report-builder/gen_ui
+OBJECTS_DIR = build/obj
+MOC_DIR     = build/moc
+UI_DIR      = build/ui
+RCC_DIR     = build/rc
 
 SOURCES += ../values.cpp \
     report-builder.cpp \
@@ -23,3 +24,6 @@ HEADERS += ../values.h \
     reportbuildertotalbydate.h \
     reportbuildertotalreduced.h \
     ../common/reportentry.h
+
+unix: target.path = /usr/local/bin
+!isEmpty(target.path): INSTALLS += target
