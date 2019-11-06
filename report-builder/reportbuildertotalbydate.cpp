@@ -2,7 +2,7 @@
 
 static QString toCsvValue(QString text)
 {
-    bool quoteString = text.contains(';') || text.contains('"');
+    bool quoteString = text.contains(';') || text.contains('"') || text.contains(",");
 
     text.replace('"', "\"\"");
 
@@ -13,7 +13,6 @@ static QString toCsvValue(QString text)
     }
 
     return text;
-
 }
 
 void BuildReportTotalBydate(const QList<ReportEntry> &list, QTextStream& stream)
