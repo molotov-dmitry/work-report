@@ -15,11 +15,17 @@ public:
     explicit DialogSettingsEdit(QWidget *parent = 0);
     ~DialogSettingsEdit();
 
-    QString getName() const;
+    QString getFirstName() const;
+    QString getSurname() const;
+    QString getLastName() const;
+    QString getDepartment() const;
     QString getMailTo() const;
     QString getReportDir() const;
 
-    void setName(const QString& name);
+    void setFirstName(const QString& firstName);
+    void setSurname(const QString& surname);
+    void setLastName(const QString& lastName);
+    void setDepartment(const QString& department);
     void setMailTo(const QString& mailTo);
     void setReportDir(const QString& reportDir);
 

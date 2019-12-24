@@ -11,8 +11,19 @@ public:
 
     void loadDefaultSettings();
 
-    QString getUserName() const;
-    void setUserName(const QString &value);
+    QString getUserName(bool shortFormat = true) const;
+
+    QString getUserFirstName() const;
+    void setUserFirstName(const QString &value);
+
+    QString getUserSurname() const;
+    void setUserSurname(const QString &value);
+
+    QString getUserLastName() const;
+    void setUserLastName(const QString &value);
+
+    QString getDepartment() const;
+    void setDepartment(const QString &value);
 
     QString getMailTo() const;
     void setMailTo(const QString &value);
@@ -27,7 +38,12 @@ public:
 
 private:
 
-    QString userName;
+    QString mUserFirstName;
+    QString mUserSurname;
+    QString mUserLastName;
+
+    QString mDepartment;
+
     QString mailTo;
     QString workPath;
 

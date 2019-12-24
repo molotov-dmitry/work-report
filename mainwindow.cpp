@@ -580,7 +580,10 @@ void MainWindow::on_buttonSettings_clicked()
 {
     DialogSettingsEdit dialog;
 
-    dialog.setName(mSettings.getUserName());
+    dialog.setFirstName(mSettings.getUserFirstName());
+    dialog.setSurname(mSettings.getUserSurname());
+    dialog.setLastName(mSettings.getUserLastName());
+    dialog.setDepartment(mSettings.getDepartment());
     dialog.setMailTo(mSettings.getMailTo());
     dialog.setReportDir(mSettings.getWorkPath());
 
@@ -592,9 +595,27 @@ void MainWindow::on_buttonSettings_clicked()
     {
         bool save = false;
 
-        if (mSettings.getUserName() != dialog.getName())
+        if (mSettings.getUserFirstName() != dialog.getFirstName())
         {
-            mSettings.setUserName(dialog.getName());
+            mSettings.setUserFirstName(dialog.getFirstName());
+            save = true;
+        }
+
+        if (mSettings.getUserSurname() != dialog.getSurname())
+        {
+            mSettings.setUserSurname(dialog.getSurname());
+            save = true;
+        }
+
+        if (mSettings.getUserLastName() != dialog.getLastName())
+        {
+            mSettings.setUserLastName(dialog.getLastName());
+            save = true;
+        }
+
+        if (mSettings.getDepartment() != dialog.getDepartment())
+        {
+            mSettings.setDepartment(dialog.getDepartment());
             save = true;
         }
 

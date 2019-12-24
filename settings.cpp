@@ -33,9 +33,14 @@ Settings::Settings()
 
     QJsonObject configObject = configDocument.object();
 
-    userName = configObject["userName"].toString();
     mailTo   = configObject["mailTo"].toString();
     workPath = configObject["dataPath"].toString();
+
+    mUserFirstName = configObject["userFirstName"].toString();
+    mUserSurname   = configObject["userSurname"].toString();
+    mUserLastName  = configObject["userLastName"].toString();
+
+    mDepartment    = configObject["department"].toString();
 
 #ifdef Q_OS_WIN
     outlookPath = configObject["outlookPath"].toString();
@@ -61,9 +66,14 @@ void Settings::save()
 
     QJsonObject configObject;
 
-    configObject["userName"] = userName;
-    configObject["mailTo"] = mailTo;
+    configObject["mailTo"]   = mailTo;
     configObject["dataPath"] = workPath;
+
+    configObject["userFirstName"] = mUserFirstName;
+    configObject["userSurname"]   = mUserSurname;
+    configObject["userLastName"]  = mUserLastName;
+
+    configObject["department"]    = mDepartment;
 
 #ifdef Q_OS_WIN
     configObject["outlookPath"] = outlookPath;
@@ -92,14 +102,80 @@ void Settings::loadDefaultSettings()
     workPath = dir.absoluteFilePath("Отчеты");
 }
 
-QString Settings::getUserName() const
+QString Settings::getUserName(bool shortFormat) const
 {
-    return userName;
+    QStringList name;
+
+    if (not mUserSurname.isEmpty())
+    {
+        name.append(mUserSurname);
+    }
+
+    if (not mUserFirstName.isEmpty())
+    {
+        if (shortFormat)
+        {
+            name.append(mUserFirstName.left(1).toUpper() + ".");
+        }
+        else
+        {
+            name.append(mUserFirstName);
+        }
+    }
+
+    if (not mUserLastName.isEmpty())
+    {
+        if (shortFormat)
+        {
+            name.append(mUserLastName.left(1).toUpper() + ".");
+        }
+        else
+        {
+            name.append(mUserLastName);
+        }
+    }
+
+    return name.join(' ');
 }
 
-void Settings::setUserName(const QString &value)
+QString Settings::getUserFirstName() const
 {
-    userName = value;
+    return mUserFirstName;
+}
+
+void Settings::setUserFirstName(const QString& value)
+{
+    mUserFirstName = value;
+}
+
+QString Settings::getUserSurname() const
+{
+    return mUserSurname;
+}
+
+void Settings::setUserSurname(const QString& value)
+{
+    mUserSurname = value;
+}
+
+QString Settings::getUserLastName() const
+{
+    return mUserLastName;
+}
+
+void Settings::setUserLastName(const QString& value)
+{
+    mUserLastName = value;
+}
+
+QString Settings::getDepartment() const
+{
+    return mDepartment;
+}
+
+void Settings::setDepartment(const QString& value)
+{
+    mDepartment = value;
 }
 
 QString Settings::getMailTo() const

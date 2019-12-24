@@ -22,9 +22,24 @@ DialogSettingsEdit::~DialogSettingsEdit()
     delete ui;
 }
 
-QString DialogSettingsEdit::getName() const
+QString DialogSettingsEdit::getFirstName() const
 {
-    return ui->editName->text();
+    return ui->editFirstName->text();
+}
+
+QString DialogSettingsEdit::getSurname() const
+{
+    return ui->editSurname->text();
+}
+
+QString DialogSettingsEdit::getLastName() const
+{
+    return ui->editLastName->text();
+}
+
+QString DialogSettingsEdit::getDepartment() const
+{
+    return ui->editDepartment->text();
 }
 
 QString DialogSettingsEdit::getMailTo() const
@@ -37,9 +52,24 @@ QString DialogSettingsEdit::getReportDir() const
     return ui->editReportDir->text();
 }
 
-void DialogSettingsEdit::setName(const QString &name)
+void DialogSettingsEdit::setFirstName(const QString& firstName)
 {
-    ui->editName->setText(name);
+    ui->editFirstName->setText(firstName);
+}
+
+void DialogSettingsEdit::setSurname(const QString& surname)
+{
+    ui->editSurname->setText(surname);
+}
+
+void DialogSettingsEdit::setLastName(const QString& lastName)
+{
+    ui->editLastName->setText(lastName);
+}
+
+void DialogSettingsEdit::setDepartment(const QString& department)
+{
+    ui->editDepartment->setText(department);
 }
 
 void DialogSettingsEdit::setMailTo(const QString &mailTo)
