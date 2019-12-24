@@ -1,4 +1,4 @@
-#include "dialogsettingsedit.h"
+﻿#include "dialogsettingsedit.h"
 #include "ui_dialogsettingsedit.h"
 
 #include <QFileDialog>

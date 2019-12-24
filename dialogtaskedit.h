@@ -1,4 +1,4 @@
-#ifndef DIALOGTASKEDIT_H
+﻿#ifndef DIALOGTASKEDIT_H
 #define DIALOGTASKEDIT_H
 
 #include <QDialog>

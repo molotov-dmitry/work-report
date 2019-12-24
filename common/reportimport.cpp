@@ -1,4 +1,4 @@
-#include "reportimport.h"
+﻿#include "reportimport.h"
 
 #include <QString>
 #include <QTextStream>

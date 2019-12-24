@@ -1,4 +1,4 @@
-#ifndef VALUES_H
+﻿#ifndef VALUES_H
 #define VALUES_H
 
 enum TaskType

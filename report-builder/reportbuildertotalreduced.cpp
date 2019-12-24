@@ -1,4 +1,4 @@
-#include "reportbuildertotalreduced.h"
+﻿#include "reportbuildertotalreduced.h"
 
 static QString toCsvValue(QString text)
 {

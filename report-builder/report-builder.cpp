@@ -1,4 +1,4 @@
-#include <QDir>
+﻿#include <QDir>
 #include <QDirIterator>
 #include <QTextStream>
 #include <QDebug>

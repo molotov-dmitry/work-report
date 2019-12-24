@@ -1,4 +1,4 @@
-#include "values.h"
+﻿#include "values.h"
 
 const Values gValuesTaskTypes[TASK_COUNT] =
 {

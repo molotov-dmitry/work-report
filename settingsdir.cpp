@@ -1,4 +1,4 @@
-#include "settingsdir.h"
+﻿#include "settingsdir.h"
 
 #include <QDir>
 #include <QStandardPaths>

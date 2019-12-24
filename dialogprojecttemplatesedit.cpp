@@ -1,4 +1,4 @@
-#include "dialogprojecttemplatesedit.h"
+﻿#include "dialogprojecttemplatesedit.h"
 #include "ui_dialogprojecttemplatesedit.h"
 
 #include <QTreeWidgetItem>

@@ -1,4 +1,4 @@
-#ifndef SETINGSDIR_H
+﻿#ifndef SETINGSDIR_H
 #define SETINGSDIR_H
 
 #include <QString>

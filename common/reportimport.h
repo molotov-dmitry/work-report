@@ -1,4 +1,4 @@
-#ifndef REPORTIMPORT_H
+﻿#ifndef REPORTIMPORT_H
 #define REPORTIMPORT_H
 
 #include <QString>

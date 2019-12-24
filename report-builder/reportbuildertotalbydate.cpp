@@ -1,4 +1,4 @@
-#include "reportbuildertotalbydate.h"
+﻿#include "reportbuildertotalbydate.h"
 
 static QString toCsvValue(QString text)
 {

@@ -1,4 +1,4 @@
-#include "reportbuilderstatistics.h"
+﻿#include "reportbuilderstatistics.h"
 
 #include <QMap>
 #include <QTextStream>

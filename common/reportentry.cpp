@@ -1,4 +1,4 @@
-#include "reportentry.h"
+﻿#include "reportentry.h"
 
 bool compareReportEntries(const ReportEntry &re1, const ReportEntry &re2)
 {

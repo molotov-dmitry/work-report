@@ -1,4 +1,4 @@
-#ifndef PROJECTTEMPLATES_H
+﻿#ifndef PROJECTTEMPLATES_H
 #define PROJECTTEMPLATES_H
 
 #include <QMap>
