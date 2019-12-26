@@ -4,6 +4,7 @@
 #include "dialogtaskedit.h"
 #include "dialogsettingsedit.h"
 #include "dialogprojecttemplatesedit.h"
+#include "dialogprojectplan.h"
 
 #include <QShortcut>
 #include <QTimer>
@@ -965,4 +966,10 @@ void MainWindow::on_actionImport_triggered()
     saveData();
 
     updateTotalHours();
+}
+
+void MainWindow::on_buttonPlan_clicked()
+{
+    DialogProjectPlan dialog(mProjectTemplates, mSettings);
+    dialog.exec();
 }

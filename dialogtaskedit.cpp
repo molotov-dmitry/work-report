@@ -114,6 +114,11 @@ QString DialogTaskEdit::getTaskResultString() const
     return ui->boxResult->itemText(getTaskResult());
 }
 
+void DialogTaskEdit::setPlanMode(bool planMode)
+{
+    ui->boxResult->setDisabled(planMode);
+}
+
 void DialogTaskEdit::setTaskType(int taskType)
 {
     ui->boxType->setCurrentIndex(taskType);

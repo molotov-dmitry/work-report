@@ -40,7 +40,8 @@ SOURCES += \
     dialogprojecttemplatesedit.cpp \
     values.cpp \
     common/reportentry.cpp \
-    common/reportimport.cpp
+    common/reportimport.cpp \
+    dialogprojectplan.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -52,13 +53,15 @@ HEADERS += \
     dialogprojecttemplatesedit.h \
     values.h \
     common/reportentry.h \
-    common/reportimport.h
+    common/reportimport.h \
+    dialogprojectplan.h
 
 FORMS += \
         mainwindow.ui \
     dialogtaskedit.ui \
     dialogsettingsedit.ui \
-    dialogprojecttemplatesedit.ui
+    dialogprojecttemplatesedit.ui \
+    dialogprojectplan.ui
 
 RESOURCES += \
     res/resources.qrc

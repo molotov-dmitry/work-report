@@ -31,6 +31,8 @@ public:
     QString getTaskResultString() const;
 
 
+    void setPlanMode(bool planMode);
+
     void setTaskType(int taskType);
     void setTaskHoursSpent(int hours);
 

@@ -82,6 +82,7 @@ private slots:
     void dateRangeChanged();
     void on_table_itemSelectionChanged();
     void on_actionImport_triggered();
+    void on_buttonPlan_clicked();
 };
 
 #endif // MAINWINDOW_H
