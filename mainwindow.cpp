@@ -185,6 +185,7 @@ QString MainWindow::toCsvValue(QString text)
     bool quoteString = text.contains(';') || text.contains('"') || text.contains(",");
 
     text.replace('"', "\"\"");
+    text.replace("\n", "\r");
 
     if (quoteString)
     {
