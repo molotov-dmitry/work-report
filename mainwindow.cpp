@@ -789,9 +789,18 @@ void MainWindow::on_buttonSend_clicked()
     QString fileName = QString::fromUtf8("Отчет ") + getDateRangeString() + ".csv";
     QString filePath = taskDir.absoluteFilePath(fileName);
 
+    //// Check e-mail is set ===================================================
+
+    if (mSettings.getMailTo().isEmpty())
+    {
+        QMessageBox::warning(this, QString::fromUtf8("Отправка"), QString::fromUtf8("Не указан e-mail руководителя"));
+        return;
+    }
+
     //// Get program and arguments =============================================
 
 #ifdef Q_OS_LINUX
+
     QUrlQuery query;
     query.addQueryItem("subject", "Отчет за неделю");
     query.addQueryItem("attach", filePath);
