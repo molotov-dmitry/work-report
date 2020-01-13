@@ -8,48 +8,7 @@
 
 ProjectTemplates::ProjectTemplates()
 {
-    QDir dir(SettingsDir::getSettingsDir(false));
 
-    if (not dir.exists())
-    {
-        return;
-    }
-
-    QString configPath = dir.absoluteFilePath("projects");
-
-    QFile projectsFile(configPath);
-
-    if (not projectsFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        return;
-    }
-
-    QString currentProject;
-
-    QTextStream in(&projectsFile);
-
-    while (not in.atEnd())
-    {
-        QString line = in.readLine();
-
-        if (line.isEmpty())
-        {
-            continue;
-        }
-
-        if (line.startsWith(' '))
-        {
-            mData[currentProject].append(line.mid(1));
-        }
-        else
-        {
-            currentProject = line;
-            mProjects.append(currentProject);
-            mData.insert(currentProject, QStringList());
-        }
-    }
-
-    projectsFile.close();
 }
 
 const QStringList &ProjectTemplates::getProjects() const
@@ -78,16 +37,33 @@ void ProjectTemplates::addProduct(const QString& project, const QString& product
     mData[project].append(product);
 }
 
-bool ProjectTemplates::save()
+bool ProjectTemplates::read(const Settings& settings)
 {
-    QDir dir(SettingsDir::getSettingsDir(true));
+    clear();
 
-    if (not dir.exists())
+    QString templatesPath = getFilePath(settings);
+    if (templatesPath.isEmpty())
     {
         return false;
     }
 
-    QString configPath = dir.absoluteFilePath("projects");
+    if (read(templatesPath))
+    {
+        return true;
+    }
+    else
+    {
+        return (migrate(settings));
+    }
+}
+
+bool ProjectTemplates::save(const Settings& settings)
+{
+    QString configPath = getFilePath(settings, true);
+    if (configPath.isEmpty())
+    {
+        return false;
+    }
 
     QFile projectsFile(configPath);
 
@@ -111,4 +87,96 @@ bool ProjectTemplates::save()
     projectsFile.close();
 
     return true;
+}
+
+QString ProjectTemplates::getFilePath(const Settings& settings, bool createDir)
+{
+    QString workPath = settings.getWorkPath();
+    if (workPath.isEmpty())
+    {
+        workPath = SettingsDir::getSettingsDir(false);
+    }
+
+    QDir dir;
+
+    if (not dir.cd(workPath))
+    {
+        if (createDir)
+        {
+            dir.mkpath(workPath);
+
+            if (not dir.cd(workPath))
+            {
+                return QString();
+            }
+        }
+        else
+        {
+            return QString();
+        }
+    }
+
+    return dir.absoluteFilePath(".templates");
+}
+
+bool ProjectTemplates::read(const QString& filePath)
+{
+    QFile projectsFile(filePath);
+
+    if (not projectsFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return false;
+    }
+
+    QString currentProject;
+
+    QTextStream in(&projectsFile);
+
+    while (not in.atEnd())
+    {
+        QString line = in.readLine();
+
+        if (line.isEmpty())
+        {
+            continue;
+        }
+
+        if (line.startsWith(' '))
+        {
+            mData[currentProject].append(line.mid(1));
+        }
+        else
+        {
+            currentProject = line;
+            mProjects.append(currentProject);
+            mData.insert(currentProject, QStringList());
+        }
+    }
+
+    projectsFile.close();
+
+    return true;
+}
+
+bool ProjectTemplates::migrate(const Settings& settings)
+{
+    QDir dir(SettingsDir::getSettingsDir(false));
+
+    if (not dir.exists())
+    {
+        return false;
+    }
+
+    QString configPath = dir.absoluteFilePath("projects");
+
+    if (read(configPath))
+    {
+        if (save(settings))
+        {
+            QFile::remove(configPath);
+            return true;
+        }
+    }
+
+    return false;
 }

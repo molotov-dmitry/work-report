@@ -90,6 +90,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //// Load data =============================================================
 
+    mProjectTemplates.read(mSettings);
+
     setupDateRange();
 
     loadData();
@@ -644,6 +646,8 @@ void MainWindow::on_buttonSettings_clicked()
         if (save)
         {
             mSettings.save();
+
+            mProjectTemplates.read(mSettings);
         }
     }
 }
@@ -855,7 +859,7 @@ void MainWindow::on_buttonTemplates_clicked()
             ++id;
         }
 
-        if (not mProjectTemplates.save())
+        if (not mProjectTemplates.save(mSettings))
         {
             QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно сохранить файл шаблонов"));
         }
