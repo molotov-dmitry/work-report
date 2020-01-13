@@ -105,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //// Launch setup when not configured ======================================
 
-    if (mSettings.getUserName().isEmpty() || mSettings.getMailTo().isEmpty())
+    if (mSettings.getUserName().isEmpty())
     {
         QTimer::singleShot(0, this, SIGNAL(on_buttonSettings_clicked()));
     }
