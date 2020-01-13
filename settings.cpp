@@ -33,8 +33,12 @@ Settings::Settings()
 
     QJsonObject configObject = configDocument.object();
 
-    mailTo   = configObject["mailTo"].toString();
-    workPath = configObject["dataPath"].toString();
+    mailTo = configObject["mailTo"].toString();
+
+    if (configObject.contains("dataPath"))
+    {
+        workPath = configObject["dataPath"].toString();
+    }
 
     mUserFirstName = configObject["userFirstName"].toString();
     mUserSurname   = configObject["userSurname"].toString();
