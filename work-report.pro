@@ -41,7 +41,8 @@ SOURCES += \
     values.cpp \
     common/reportentry.cpp \
     common/reportimport.cpp \
-    dialogprojectplan.cpp
+    dialogprojectplan.cpp \
+    monthdaysselectwidget.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -54,14 +55,16 @@ HEADERS += \
     values.h \
     common/reportentry.h \
     common/reportimport.h \
-    dialogprojectplan.h
+    dialogprojectplan.h \
+    monthdaysselectwidget.h
 
 FORMS += \
         mainwindow.ui \
     dialogtaskedit.ui \
     dialogsettingsedit.ui \
     dialogprojecttemplatesedit.ui \
-    dialogprojectplan.ui
+    dialogprojectplan.ui \
+    monthdaysselectwidget.ui
 
 RESOURCES += \
     res/resources.qrc
