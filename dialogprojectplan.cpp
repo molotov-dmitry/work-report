@@ -1,4 +1,4 @@
-#include "dialogprojectplan.h"
+п»ї#include "dialogprojectplan.h"
 #include "ui_dialogprojectplan.h"
 
 #include <QLocale>
@@ -32,8 +32,7 @@ DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
     QDialog(parent),
     ui(new Ui::DialogProjectPlan),
     mProjectTemplates(projectTemplates),
-    mSettings(settings),
-    mPlanChanged(false)
+    mSettings(settings)
 {
     ui->setupUi(this);
 
@@ -49,26 +48,34 @@ DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
 
     ui->boxMonths->clear();
 
-    for (int i = 1; i <= 12; ++i)
+    for (int i = 0; i < 12; ++i)
     {
-        ui->boxMonths->addItem(locale.standaloneMonthName(i));
+        ui->boxMonths->addItem(locale.standaloneMonthName(i + 1) +
+                               " - " +
+                               locale.standaloneMonthName(((i + 1) % 12) + 1));
     }
 
     //// Set current date ======================================================
 
     QDate date = QDate::currentDate();
-    date = date.addMonths(1);
 
     ui->boxMonths->setCurrentIndex(date.month() - 1);
     ui->editYear->setValue(date.year());
 
     //// Connect ===============================================================
 
+    connect(ui->tablePlan, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
+            this, SLOT(on_buttonEdit_clicked()));
+
     connect(ui->boxMonths, SIGNAL(currentIndexChanged(int)),
             this, SLOT(loadPlan()));
 
     connect(ui->editYear, SIGNAL(valueChanged(int)),
             this, SLOT(loadPlan()));
+
+    connect(ui->widgetWorkDays, SIGNAL(daysUpdated()), this, SLOT(updatePlanHours()));
+
+    connect(ui->widgetWorkDays, SIGNAL(daysUpdated()), this, SLOT(savePlan()));
 
     //// Load plan =============================================================
 
@@ -96,7 +103,7 @@ void DialogProjectPlan::on_buttonAdd_clicked()
 
         updatePlanHours();
 
-        mPlanChanged = true;
+        savePlan();
     }
 }
 
@@ -135,7 +142,7 @@ void DialogProjectPlan::on_buttonEdit_clicked()
 
         updatePlanHours();
 
-        mPlanChanged = true;
+        savePlan();
     }
 }
 
@@ -159,13 +166,24 @@ void DialogProjectPlan::on_buttonRemove_clicked()
 
     updatePlanHours();
 
-    mPlanChanged = true;
+    savePlan();
+}
+
+void DialogProjectPlan::updatePlanDate(const QDate& date)
+{
+    //// Update work days widget ===============================================
+
+    ui->widgetWorkDays->setDate(date);
+
+    //// Update plan hours =====================================================
+
+    updatePlanHours();
 }
 
 void DialogProjectPlan::updatePlanHours()
 {
     int hoursWork = 0;
-//    int hoursTotal = (ui->dateFrom->date().daysTo(ui->dateTo->date()) + 1) * 8;
+    int hoursTotal = ui->widgetWorkDays->workDaysCount() * 8;
 
     const int count = ui->tablePlan->topLevelItemCount();
 
@@ -176,28 +194,46 @@ void DialogProjectPlan::updatePlanHours()
         hoursWork += item->data(COL_HOURS_SPENT, Qt::UserRole).toInt();
     }
 
-    ui->labelPlanHours->setText(QString::asprintf("%d", hoursWork));
+    ui->labelPlanHours->setText(QString::asprintf("%d / %d", hoursWork, hoursTotal));
 
-//    ui->labelPlanHours->setText(QString::asprintf("%d / %d", hoursWork, hoursTotal));
+    QPalette labelPalette = this->palette();
 
-//    QPalette labelPalette = this->palette();
+    if (hoursWork == hoursTotal)
+    {
+        labelPalette.setColor(QPalette::WindowText, QColor(56, 142, 60));
+    }
+    else
+    {
+        labelPalette.setColor(QPalette::WindowText, QColor(183, 28, 28));
+    }
 
-//    if (hoursWork == hoursTotal)
-//    {
-//        labelPalette.setColor(QPalette::WindowText, QColor(56, 142, 60));
-//    }
-//    else
-//    {
-//        labelPalette.setColor(QPalette::WindowText, QColor(183, 28, 28));
-//    }
-
-//    ui->labelTotalHours->setPalette(labelPalette);
+    ui->labelPlanHours->setPalette(labelPalette);
 }
 
 void DialogProjectPlan::loadPlan()
 {
+    QDate date;
+    date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+
+    QDate dateNext = date.addMonths(1);
+
+    //// Clear data ============================================================
+
     ui->tablePlan->clear();
-    mPlanChanged = false;
+
+    //// Set titles ============================================================
+
+    QLocale locale;
+
+    ui->tabWidget->setTabText(0, QString::fromUtf8("РџР»Р°РЅ РЅР° ") +
+                              locale.standaloneMonthName(dateNext.month(), QLocale::LongFormat) +
+                              " " + QString::number(dateNext.year()) +
+                              QString::fromUtf8(" Рі."));
+
+    ui->tabWidget->setTabText(1, QString::fromUtf8("РћС‚С‡РµС‚ Р·Р° ") +
+                              locale.standaloneMonthName(date.month(), QLocale::LongFormat) +
+                              " " + QString::number(date.year()) +
+                              QString::fromUtf8(" Рі."));
 
     //// Get task file paths ===================================================
 
@@ -206,19 +242,18 @@ void DialogProjectPlan::loadPlan()
     if (not taskDir.cd(mSettings.getWorkPath()))
     {
         // Warning
+        updatePlanDate(dateNext);
         return;
     }
 
     if (not taskDir.cd(".plan"))
     {
         // Warning
+        updatePlanDate(dateNext);
         return;
     }
 
-    QDate date;
-    date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
-
-    QString fileName = date.toString("yyyy-MM") +".json";
+    QString fileName = dateNext.toString("yyyy-MM") +".json";
 
     QString taskPath(taskDir.absoluteFilePath(fileName));
 
@@ -228,6 +263,7 @@ void DialogProjectPlan::loadPlan()
 
     if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+        updatePlanDate(dateNext);
         return;
     }
 
@@ -299,15 +335,34 @@ void DialogProjectPlan::loadPlan()
         ui->tablePlan->addTopLevelItem(item);
     }
 
-    //// Update plan hours =====================================================
+    //// Update date ===========================================================
 
-    updatePlanHours();
+    updatePlanDate(dateNext);
+
+    //// Load work days list ===================================================
+
+    if (reportObject["workDays"].isArray())
+    {
+        QList<int> workDaysList;
+
+        foreach (const QJsonValue& value, reportObject["workDays"].toArray())
+        {
+            workDaysList.append(value.toInt());
+        }
+
+        ui->widgetWorkDays->setWorkDays(workDaysList);
+    }
 
     //// =======================================================================
 }
 
 void DialogProjectPlan::savePlan()
 {
+    QDate date;
+    date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+
+    QDate dateNext = date.addMonths(1);
+
     //// Generate JSON =========================================================
 
     QJsonObject reportObject;
@@ -353,7 +408,16 @@ void DialogProjectPlan::savePlan()
 
     reportObject["tasks"] = taskArray;
 
-    QJsonDocument reportDocument(reportObject);
+    //// Add work days list ----------------------------------------------------
+
+    QJsonArray workDaysArray;
+
+    foreach (int workDay, ui->widgetWorkDays->workDays())
+    {
+        workDaysArray.append(workDay);
+    }
+
+    reportObject["workDays"] = workDaysArray;
 
     //// Get task file paths ===================================================
 
@@ -365,7 +429,7 @@ void DialogProjectPlan::savePlan()
 
         if (not taskDir.cd(mSettings.getWorkPath()))
         {
-            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для отчетов"));
+            QMessageBox::critical(this, QString::fromUtf8("РЎРѕС…СЂР°РЅРµРЅРёРµ"), QString::fromUtf8("РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ РґРёСЂРµРєС‚РѕСЂРёСЋ РґР»СЏ РѕС‚С‡РµС‚РѕРІ"));
             return;
         }
     }
@@ -378,12 +442,12 @@ void DialogProjectPlan::savePlan()
 
         if (not taskDir.cd(planDir))
         {
-            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для планов"));
+            QMessageBox::critical(this, QString::fromUtf8("РЎРѕС…СЂР°РЅРµРЅРёРµ"), QString::fromUtf8("РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ РґРёСЂРµРєС‚РѕСЂРёСЋ РґР»СЏ РїР»Р°РЅРѕРІ"));
             return;
         }
     }
 
-    QString fileName = QDate::currentDate().toString("yyyy-MM") +".json";
+    QString fileName = dateNext.toString("yyyy-MM") +".json";
 
     QString taskPath(taskDir.absoluteFilePath(fileName));
     QString taskPathBak(taskDir.absoluteFilePath(fileName + ".bak"));
@@ -397,9 +461,11 @@ void DialogProjectPlan::savePlan()
 
     if (not taskFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно записать файл отчета"));
+        QMessageBox::critical(this, QString::fromUtf8("РЎРѕС…СЂР°РЅРµРЅРёРµ"), QString::fromUtf8("РќРµРІРѕР·РјРѕР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ С„Р°Р№Р» РѕС‚С‡РµС‚Р°"));
         return;
     }
+
+    QJsonDocument reportDocument(reportObject);
 
     taskFile.write(reportDocument.toJson());
 
@@ -416,8 +482,6 @@ void DialogProjectPlan::savePlan()
     QFile::remove(taskPathBak);
 
     //// =======================================================================
-
-    mPlanChanged = false;
 }
 
 void DialogProjectPlan::exportPlan()

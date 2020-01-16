@@ -24,54 +24,101 @@
      </property>
      <widget class="QWidget" name="tabPlan">
       <attribute name="title">
-       <string>План</string>
+       <string>План на следующий месяц</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QTreeWidget" name="tablePlan">
-         <property name="alternatingRowColors">
-          <bool>true</bool>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>24</width>
-           <height>24</height>
-          </size>
-         </property>
-         <property name="indentation">
-          <number>0</number>
-         </property>
-         <column>
-          <property name="text">
-           <string>Тип</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Часы</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Проект</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Изделие</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Действие</string>
-          </property>
-         </column>
-         <column>
-          <property name="text">
-           <string>Описание</string>
-          </property>
-         </column>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Рабочие дни:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="MonthDaysSelectWidget" name="widgetWorkDays" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QTreeWidget" name="tablePlan">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>24</width>
+             <height>24</height>
+            </size>
+           </property>
+           <property name="indentation">
+            <number>0</number>
+           </property>
+           <column>
+            <property name="text">
+             <string>Тип</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Часы</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Проект</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Изделие</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Действие</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>Описание</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -175,7 +222,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton_2">
+          <widget class="QToolButton" name="buttonPlanExport">
            <property name="minimumSize">
             <size>
              <width>100</width>
@@ -188,20 +235,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Сохранить</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="toolButton_3">
+          <widget class="QToolButton" name="buttonPlanClose">
            <property name="minimumSize">
             <size>
              <width>100</width>
@@ -219,7 +253,7 @@
      </widget>
      <widget class="QWidget" name="tabReport">
       <attribute name="title">
-       <string>Отчет за месяц</string>
+       <string>Отчет за текущий месяц</string>
       </attribute>
      </widget>
     </widget>
@@ -239,10 +273,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MonthDaysSelectWidget</class>
+   <extends>QWidget</extends>
+   <header>monthdaysselectwidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>toolButton_3</sender>
+   <sender>buttonPlanClose</sender>
    <signal>clicked()</signal>
    <receiver>DialogProjectPlan</receiver>
    <slot>reject()</slot>
@@ -258,23 +300,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>toolButton</sender>
-   <signal>clicked()</signal>
-   <receiver>DialogProjectPlan</receiver>
-   <slot>savePlan()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>845</x>
-     <y>538</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>856</x>
-     <y>627</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolButton_2</sender>
+   <sender>buttonPlanExport</sender>
    <signal>clicked()</signal>
    <receiver>DialogProjectPlan</receiver>
    <slot>exportPlan()</slot>

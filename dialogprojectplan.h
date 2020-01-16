@@ -29,6 +29,8 @@ private slots:
 
     void on_buttonRemove_clicked();
 
+    void updatePlanDate(const QDate &date);
+
     void updatePlanHours();
 
     void loadPlan();
@@ -40,8 +42,6 @@ private:
 
     const ProjectTemplates& mProjectTemplates;
     const Settings&         mSettings;
-
-    bool mPlanChanged;
 
     void setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog);
 };
