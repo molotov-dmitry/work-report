@@ -131,7 +131,7 @@
             </size>
            </property>
            <property name="icon">
-            <iconset theme="add">
+            <iconset theme="list-add-symbolic">
              <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
@@ -145,8 +145,7 @@
             </size>
            </property>
            <property name="icon">
-            <iconset theme="edit">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset theme="edit-symbolic"/>
            </property>
           </widget>
          </item>
@@ -159,7 +158,7 @@
             </size>
            </property>
            <property name="icon">
-            <iconset theme="remove">
+            <iconset theme="list-remove-symbolic">
              <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
