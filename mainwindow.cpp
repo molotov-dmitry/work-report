@@ -118,9 +118,98 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::reloadWorkDays()
+{
+    QMap< QDate, QList<int> > workDays;
+
+    //// Get months range ======================================================
+
+    QDate startDate  = ui->dateFrom->date();
+    QDate finishDate = ui->dateTo->date();
+
+    if (finishDate < startDate)
+    {
+        QDate tmp = finishDate;
+        finishDate = startDate;
+        startDate = tmp;
+    }
+
+    QDate start(startDate.year(), startDate.month(), 1);
+    QDate finish(finishDate.year(), finishDate.month(), 1);
+
+    //// Get plan directory ====================================================
+
+    QDir planDir;
+
+    if (not planDir.cd(mSettings.getWorkPath()))
+    {
+        return;
+    }
+
+    if (not planDir.cd(".plan"))
+    {
+        return;
+    }
+
+    //// Get months work days ==================================================
+
+    for (QDate d = start; d <= finish; d = d.addMonths(1))
+    {
+        //// Get task file paths -----------------------------------------------
+
+        QString fileName = d.toString("yyyy-MM") +".json";
+
+        QString taskPath(planDir.absoluteFilePath(fileName));
+
+        //// Open file ---------------------------------------------------------
+
+        QFile file(taskPath);
+
+        if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            continue;
+        }
+
+        //// Read file ---------------------------------------------------------
+
+        QByteArray taskByteArray = file.readAll();
+
+        //// Load JSON ---------------------------------------------------------
+
+        QJsonDocument taskDocument = QJsonDocument::fromJson(taskByteArray);
+
+        QJsonObject reportObject = taskDocument.object();
+
+        //// Load work days list -----------------------------------------------
+
+        if (reportObject["workDays"].isArray())
+        {
+            QList<int> workDaysList;
+
+            foreach (const QJsonValue& value, reportObject["workDays"].toArray())
+            {
+                workDaysList.append(value.toInt());
+            }
+
+            workDays.insert(d, workDaysList);
+
+        }
+
+        //// -------------------------------------------------------------------
+    }
+
+    //// =======================================================================
+
+    mWorkDays = workDays;
+
+}
+
 void MainWindow::setupDateRange()
 {
     QDate currentDate = QDate::currentDate();
+    QDate monthStart(currentDate.year(), currentDate.month(), 1);
+
+    //// Start date ============================================================
 
     QDate dateFrom;
 
@@ -133,15 +222,86 @@ void MainWindow::setupDateRange()
         dateFrom = currentDate.addDays(1 - currentDate.day());
     }
 
-    QDate dateTo = dateFrom.addDays(5 - dateFrom.dayOfWeek());
-
-    if (dateTo.month() != dateFrom.month() || dateTo.year() != dateFrom.year())
-    {
-        dateTo = dateTo.addDays(-dateTo.day());
-    }
+    //// Set dates =============================================================
 
     ui->dateFrom->setDate(dateFrom);
-    ui->dateTo->setDate(dateTo);
+    ui->dateTo->setDate(dateFrom);
+
+    //// Reload work days ======================================================
+
+    reloadWorkDays();
+
+    //// Start date ============================================================
+
+    bool startDateFound = false;
+
+    for (int d = Qt::Monday; d <= Qt::Sunday; d++)
+    {
+        QDate newDateFrom = dateFrom.addDays(d - 1);
+
+        if (newDateFrom.month() != dateFrom.month() || newDateFrom.year() != dateFrom.year())
+        {
+            break;
+        }
+
+        if (mWorkDays.contains(monthStart))
+        {
+            QList<int> workDays = mWorkDays.value(monthStart);
+
+            if (workDays.contains(newDateFrom.day()))
+            {
+                dateFrom = newDateFrom;
+                ui->dateFrom->setDate(newDateFrom);
+                startDateFound = true;
+                break;
+            }
+        }
+        else if (d <= Qt::Friday)
+        {
+            dateFrom = newDateFrom;
+            ui->dateFrom->setDate(newDateFrom);
+            startDateFound = true;
+            break;
+        }
+    }
+
+    if (not startDateFound)
+    {
+        dateFrom = currentDate;
+        ui->dateFrom->setDate(dateFrom);
+        ui->dateTo->setDate(dateFrom);
+    }
+
+    //// Finish date ===========================================================
+
+    for (int d = Qt::Sunday; d >= Qt::Monday; d--)
+    {
+        QDate dateTo = dateFrom.addDays(d - 1);
+
+        if (dateTo.month() != dateFrom.month() || dateTo.year() != dateFrom.year())
+        {
+            continue;
+        }
+
+        if (mWorkDays.contains(monthStart))
+        {
+            QList<int> workDays = mWorkDays.value(monthStart);
+
+            if (workDays.contains(dateTo.day()))
+            {
+                ui->dateTo->setDate(dateTo);
+                break;
+            }
+        }
+        else if (d <= Qt::Friday)
+        {
+            ui->dateTo->setDate(dateTo);
+            break;
+        }
+    }
+
+    //// =======================================================================
+
 }
 
 void MainWindow::setItem(QTreeWidgetItem &item, const DialogTaskEdit &dialog)
@@ -213,7 +373,37 @@ void MainWindow::updateExportStatus()
 void MainWindow::updateTotalHours()
 {
     int hoursWork = 0;
-    int hoursTotal = (ui->dateFrom->date().daysTo(ui->dateTo->date()) + 1) * 8;
+
+    //// Get total hours =======================================================
+
+    int hoursTotal = 0;
+
+    QDate dateStart  = qMin(ui->dateFrom->date(), ui->dateTo->date());
+    QDate dateFinish = qMax(ui->dateFrom->date(), ui->dateTo->date());
+
+    for (QDate d = dateStart; d <= dateFinish; d = d.addDays(1))
+    {
+        QDate dateMonthStart(d.year(), d.month(), 1);
+
+        if (mWorkDays.contains(dateMonthStart))
+        {
+            QList<int> workDaysList = mWorkDays.value(dateMonthStart);
+
+            if (workDaysList.contains(d.day()))
+            {
+                hoursTotal += 8;
+            }
+        }
+        else
+        {
+            if (d.dayOfWeek() <= Qt::Friday)
+            {
+                hoursTotal += 8;
+            }
+        }
+    }
+
+    //// Get work hours ========================================================
 
     const int count = ui->table->topLevelItemCount();
 
@@ -223,6 +413,8 @@ void MainWindow::updateTotalHours()
 
         hoursWork += item->data(COL_HOURS_SPENT, Qt::UserRole).toInt();
     }
+
+    //// Print hours ===========================================================
 
     ui->labelTotalHours->setText(QString::asprintf("%d / %d", hoursWork, hoursTotal));
 
@@ -985,4 +1177,7 @@ void MainWindow::on_buttonPlan_clicked()
 {
     DialogProjectPlan dialog(mProjectTemplates, mSettings);
     dialog.exec();
+
+    reloadWorkDays();
+    updateTotalHours();
 }

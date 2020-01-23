@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include <QMap>
+#include <QList>
 #include <QStringList>
 
 #include "settings.h"
@@ -65,6 +66,9 @@ private:
     ProjectTemplates mProjectTemplates;
     bool             mDataExported;
 
+    QMap< QDate, QList<int> > mWorkDays;
+
+    void reloadWorkDays();
     void setupDateRange();
 
     void setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog);
