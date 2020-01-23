@@ -37,6 +37,13 @@ private slots:
     void savePlan();
     void exportPlan();
 
+    void on_buttonMoveBack_clicked();
+    void on_buttonMoveForward_clicked();
+
+    void moveInTime(int months);
+
+    void on_buttonGoToday_clicked();
+
 private:
     Ui::DialogProjectPlan *ui;
 

@@ -518,3 +518,31 @@ void DialogProjectPlan::setItem(QTreeWidgetItem& item, const DialogTaskEdit& dia
         item.setText(COL_DESCRIPTION, QString());
     }
 }
+
+void DialogProjectPlan::on_buttonMoveBack_clicked()
+{
+    moveInTime(-1);
+}
+
+void DialogProjectPlan::on_buttonMoveForward_clicked()
+{
+    moveInTime(1);
+}
+
+void DialogProjectPlan::moveInTime(int months)
+{
+    QDate date(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+
+    date = date.addMonths(months);
+
+    ui->editYear->setValue(date.year());
+    ui->boxMonths->setCurrentIndex(date.month() - 1);
+}
+
+void DialogProjectPlan::on_buttonGoToday_clicked()
+{
+    QDate date = QDate::currentDate();
+
+    ui->editYear->setValue(date.year());
+    ui->boxMonths->setCurrentIndex(date.month() - 1);
+}
