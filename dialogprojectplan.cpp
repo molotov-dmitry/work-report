@@ -225,14 +225,14 @@ void DialogProjectPlan::loadPlan()
 
     QLocale locale;
 
-    ui->tabWidget->setTabText(0, QString::fromUtf8("План на ") +
-                              locale.standaloneMonthName(dateNext.month(), QLocale::LongFormat) +
-                              " " + QString::number(dateNext.year()) +
-                              QString::fromUtf8(" г."));
-
-    ui->tabWidget->setTabText(1, QString::fromUtf8("Отчет за ") +
+    ui->tabWidget->setTabText(0, QString::fromUtf8("Отчет за ") +
                               locale.standaloneMonthName(date.month(), QLocale::LongFormat) +
                               " " + QString::number(date.year()) +
+                              QString::fromUtf8(" г."));
+
+    ui->tabWidget->setTabText(1, QString::fromUtf8("План на ") +
+                              locale.standaloneMonthName(dateNext.month(), QLocale::LongFormat) +
+                              " " + QString::number(dateNext.year()) +
                               QString::fromUtf8(" г."));
 
     //// Get task file paths ===================================================

@@ -98,8 +98,13 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
+     <widget class="QWidget" name="tabReport">
+      <attribute name="title">
+       <string>Отчет за текущий месяц</string>
+      </attribute>
+     </widget>
      <widget class="QWidget" name="tabPlan">
       <attribute name="title">
        <string>План на следующий месяц</string>
@@ -328,11 +333,6 @@
         </layout>
        </item>
       </layout>
-     </widget>
-     <widget class="QWidget" name="tabReport">
-      <attribute name="title">
-       <string>Отчет за текущий месяц</string>
-      </attribute>
      </widget>
     </widget>
    </item>
