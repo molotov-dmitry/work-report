@@ -28,7 +28,8 @@
         <string>Сегодня</string>
        </property>
        <property name="icon">
-        <iconset theme="calendar-go-today"/>
+        <iconset theme="calendar-go-today">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -44,7 +45,8 @@
         <string>&lt;</string>
        </property>
        <property name="icon">
-        <iconset theme="back"/>
+        <iconset theme="back">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -60,7 +62,8 @@
         <string>&gt;</string>
        </property>
        <property name="icon">
-        <iconset theme="forward"/>
+        <iconset theme="forward">
+         <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
      </item>
@@ -98,112 +101,242 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabReport">
       <attribute name="title">
        <string>Отчет за текущий месяц</string>
       </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QTreeWidget" name="tableMonthReport">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="indentation">
+          <number>0</number>
+         </property>
+         <column>
+          <property name="text">
+           <string>Тип</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Часы</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Проект</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Изделие</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Действие</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Описание</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QToolButton" name="buttonAddReport">
+           <property name="minimumSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="icon">
+            <iconset theme="list-add-symbolic">
+             <normaloff>.</normaloff>.</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="buttonEditReport">
+           <property name="minimumSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="icon">
+            <iconset theme="edit-symbolic">
+             <normaloff>.</normaloff>.</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="buttonRemoveReport">
+           <property name="minimumSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="icon">
+            <iconset theme="list-remove-symbolic">
+             <normaloff>.</normaloff>.</iconset>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="Line" name="line_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Общее количество часов:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelReportHours">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
      <widget class="QWidget" name="tabPlan">
       <attribute name="title">
        <string>План на следующий месяц</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0" rowspan="2">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QLabel" name="label_2">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Рабочие дни:</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="MonthDaysSelectWidget" name="widgetWorkDays" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QLabel" name="label_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Рабочие дни:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="QTreeWidget" name="tablePlan">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
+          <widget class="MonthDaysSelectWidget" name="widgetWorkDays" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="iconSize">
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
             <size>
-             <width>24</width>
-             <height>24</height>
+             <width>20</width>
+             <height>40</height>
             </size>
            </property>
-           <property name="indentation">
-            <number>0</number>
-           </property>
-           <column>
-            <property name="text">
-             <string>Тип</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Часы</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Проект</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Изделие</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Действие</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Описание</string>
-            </property>
-           </column>
-          </widget>
+          </spacer>
          </item>
         </layout>
        </item>
-       <item>
+       <item row="0" column="1">
+        <widget class="QTreeWidget" name="tablePlan">
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="indentation">
+          <number>0</number>
+         </property>
+         <column>
+          <property name="text">
+           <string>Тип</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Часы</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Проект</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Изделие</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Действие</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>Описание</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item row="1" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QToolButton" name="buttonAdd">
@@ -289,52 +422,52 @@
          </item>
         </layout>
        </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QToolButton" name="buttonPlanExport">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Экспорт</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="buttonPlanClose">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>32</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Закрыть</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
       </layout>
      </widget>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QToolButton" name="buttonExport">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Экспорт</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="buttonClose">
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Закрыть</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -349,14 +482,14 @@
  <resources/>
  <connections>
   <connection>
-   <sender>buttonPlanClose</sender>
+   <sender>buttonClose</sender>
    <signal>clicked()</signal>
    <receiver>DialogProjectPlan</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>941</x>
-     <y>544</y>
+     <x>507</x>
+     <y>553</y>
     </hint>
     <hint type="destinationlabel">
      <x>950</x>
@@ -365,14 +498,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonPlanExport</sender>
+   <sender>buttonExport</sender>
    <signal>clicked()</signal>
    <receiver>DialogProjectPlan</receiver>
    <slot>exportPlan()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>739</x>
-     <y>538</y>
+     <x>401</x>
+     <y>553</y>
     </hint>
     <hint type="destinationlabel">
      <x>739</x>
