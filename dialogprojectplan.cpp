@@ -144,9 +144,6 @@ void DialogProjectPlan::on_buttonEditPlan_clicked()
     {
         setItem(*item, dialog);
 
-        QUuid uuid = QUuid::createUuid();
-        item->setData(0, Qt::UserRole + 1, uuid.toString());
-
         updatePlanHours();
 
         savePlan();
