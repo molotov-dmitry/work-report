@@ -241,6 +241,10 @@ void DialogProjectPlan::changeDate()
     //// Reload Plan ===========================================================
 
     loadPlan();
+
+    //// Reload month report ===================================================
+
+    loadMonthReport();
 }
 
 void DialogProjectPlan::loadPlan()
@@ -385,6 +389,138 @@ void DialogProjectPlan::loadPlan()
         }
 
         ui->widgetWorkDays->setWorkDays(workDaysList);
+    }
+
+    //// =======================================================================
+}
+
+void DialogProjectPlan::loadMonthReport()
+{
+    QDate date;
+    date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+
+    //// Clear data ============================================================
+
+    ui->tablePlan->clear();
+
+    //// Get task file paths ===================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        // Warning
+        return;
+    }
+
+    if (not taskDir.cd(".plan"))
+    {
+        // Warning
+        return;
+    }
+
+    QString fileName = date.toString("yyyy-MM") +".json";
+
+    QString taskPath(taskDir.absoluteFilePath(fileName));
+
+    //// Open file =============================================================
+
+    QFile file(taskPath);
+
+    if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return;
+    }
+
+    QByteArray taskByteArray = file.readAll();
+
+    //// Load JSON =============================================================
+
+    QJsonDocument taskDocument = QJsonDocument::fromJson(taskByteArray);
+
+    QJsonObject reportObject = taskDocument.object();
+
+    //// Add tasks =============================================================
+
+    foreach (const QJsonValue& value, reportObject["tasks"].toArray())
+    {
+        QJsonObject object = value.toObject();
+
+        DialogTaskEdit dialog;
+        dialog.setProjectTemplates(mProjectTemplates);
+        dialog.setPlanMode(true);
+
+        //// Get type ----------------------------------------------------------
+
+        QByteArray typeStr = object["type"].toString().toUtf8();
+
+        for (int i = 0; i < TASK_COUNT; ++i)
+        {
+            if (QByteArray(gValuesTaskTypes[i].jsonValue) == typeStr)
+            {
+                dialog.setTaskType(gValuesTaskTypes[i].value);
+            }
+        }
+
+        //// Get hours ---------------------------------------------------------
+
+        dialog.setTaskHoursSpent(object["hours"].toInt());
+
+        //// Parse action ------------------------------------------------------
+
+        if (dialog.getTaskType() == TASK_ACTION)
+        {
+            //// Get string values ---------------------------------------------
+
+            dialog.setTaskProject(object["project"].toString());
+            dialog.setTaskProduct(object["product"].toString());
+            dialog.setTaskDescription(object["description"].toString());
+
+            //// Get action ----------------------------------------------------
+
+            QByteArray actionStr = object["action"].toString().toUtf8();
+
+            for (int i = 0; i < ACTION_COUNT; ++i)
+            {
+                if (QByteArray(gValuesActionTypes[i].jsonValue) == actionStr)
+                {
+                    dialog.setTaskActionType(gValuesActionTypes[i].value);
+                }
+            }
+
+            //// ---------------------------------------------------------------
+        }
+
+        //// Get UUID ----------------------------------------------------------
+
+        QString uuidStr;
+
+        if (object.contains("uuid"))
+        {
+            uuidStr = object["uuid"].toString();
+
+            if (QUuid::fromString(uuidStr).isNull())
+            {
+                uuidStr = QUuid::createUuid().toString();
+            }
+        }
+
+        //// Add item ----------------------------------------------------------
+
+        QTreeWidgetItem* item = new QTreeWidgetItem;
+
+        setItem(*item, dialog);
+        item->setData(0, Qt::UserRole + 1, uuidStr);
+        item->setData(0, Qt::UserRole + 2, true);
+
+        ui->tableMonthReport->addTopLevelItem(item);
+
+        //// Set bold font -----------------------------------------------------
+
+        QFont font = ui->tableMonthReport->font();
+        font.setBold(true);
+
+        item->setFont(0, font);
     }
 
     //// =======================================================================

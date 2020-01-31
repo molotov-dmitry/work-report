@@ -24,9 +24,7 @@ public:
 
 private slots:
     void on_buttonAdd_clicked();
-
     void on_buttonEdit_clicked();
-
     void on_buttonRemove_clicked();
 
     void updatePlanDate(const QDate &date);
@@ -36,6 +34,8 @@ private slots:
     void changeDate();
 
     void loadPlan();
+    void loadMonthReport();
+
     void savePlan();
     void exportPlan();
 
