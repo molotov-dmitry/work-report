@@ -507,10 +507,10 @@ void DialogProjectPlan::savePlan()
 
     taskFile.close();
 
-    //// Make file hidden (for Windows) ========================================
+    //// Make plan directory hidden (for Windows) ==============================
 
 #ifdef Q_OS_WIN
-    SetFileAttributes(reinterpret_cast<LPCWSTR>(taskPath.utf16()), FILE_ATTRIBUTE_HIDDEN);
+    SetFileAttributes(reinterpret_cast<LPCWSTR>(taskDir.absolutePath().utf16()), FILE_ATTRIBUTE_HIDDEN);
 #endif
 
     //// Remove backup file ====================================================
