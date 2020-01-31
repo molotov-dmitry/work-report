@@ -401,7 +401,7 @@ void DialogProjectPlan::loadMonthReport()
 
     //// Clear data ============================================================
 
-    ui->tablePlan->clear();
+    ui->tableMonthReport->clear();
 
     //// Get task file paths ===================================================
 
