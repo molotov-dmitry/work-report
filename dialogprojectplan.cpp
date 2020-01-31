@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
+#include <QUuid>
 
 #include "values.h"
 #include "projecttemplates.h"
@@ -99,6 +100,9 @@ void DialogProjectPlan::on_buttonAdd_clicked()
 
         setItem(*item, dialog);
 
+        QUuid uuid = QUuid::createUuid();
+        item->setData(0, Qt::UserRole + 1, uuid.toString());
+
         ui->tablePlan->addTopLevelItem(item);
 
         updatePlanHours();
@@ -139,6 +143,9 @@ void DialogProjectPlan::on_buttonEdit_clicked()
     if (dialog.exec() == QDialog::Accepted)
     {
         setItem(*item, dialog);
+
+        QUuid uuid = QUuid::createUuid();
+        item->setData(0, Qt::UserRole + 1, uuid.toString());
 
         updatePlanHours();
 
@@ -326,11 +333,26 @@ void DialogProjectPlan::loadPlan()
             //// ---------------------------------------------------------------
         }
 
+        //// Get UUID ----------------------------------------------------------
+
+        QString uuidStr;
+
+        if (object.contains("uuid"))
+        {
+            uuidStr = object["uuid"].toString();
+
+            if (QUuid::fromString(uuidStr).isNull())
+            {
+                uuidStr = QUuid::createUuid().toString();
+            }
+        }
+
         //// Add item ----------------------------------------------------------
 
         QTreeWidgetItem* item = new QTreeWidgetItem;
 
         setItem(*item, dialog);
+        item->setData(0, Qt::UserRole + 1, uuidStr);
 
         ui->tablePlan->addTopLevelItem(item);
     }
@@ -400,6 +422,8 @@ void DialogProjectPlan::savePlan()
             taskObject["product"]     = item->text(COL_PRODUCT);
             taskObject["action"]      = QString::fromUtf8(gValuesActionTypes[actionId].jsonValue);
             taskObject["description"] = item->text(COL_DESCRIPTION);
+
+            taskObject["uuid"]        = item->data(0, Qt::UserRole + 1).toString();
         }
 
         taskArray.append(taskObject);
