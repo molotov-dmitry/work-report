@@ -701,6 +701,38 @@ void DialogProjectPlan::loadMonthReport()
 
     }
 
+    //// Add unsorted tasks ====================================================
+
+    {
+        DialogTaskEdit dialog;
+
+        //// Create unsorted category ------------------------------------------
+
+        dialog.setTaskType(TASK_ACTION);
+        dialog.setTaskActionType(ACTION_OTHER);
+        dialog.setTaskProject(QString());
+        dialog.setTaskProduct(QString());
+        dialog.setTaskDescription(QString::fromUtf8("Нераспределённые"));
+
+        //// Create item -------------------------------------------------------
+
+        QTreeWidgetItem* item = new QTreeWidgetItem;
+
+        setItem(*item, dialog);
+        item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
+        item->setText(COL_HOURS_SPENT, "0");
+        item->setData(0, Qt::UserRole + 2, true);
+
+        ui->tableMonthReport->addTopLevelItem(item);
+
+        //// Set bold font -----------------------------------------------------
+
+        QFont font = ui->tableMonthReport->font();
+        font.setBold(true);
+
+        item->setFont(0, font);
+    }
+
     //// =======================================================================
 }
 
