@@ -185,11 +185,16 @@ void DialogProjectPlan::on_buttonAddReport_clicked()
 
         setItem(*item, dialog);
 
+        item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
+        item->setText(COL_HOURS_SPENT, "0");
+
         QUuid uuid = QUuid::createUuid();
         item->setData(0, Qt::UserRole + 1, uuid.toString());
         item->setData(0, Qt::UserRole + 2, false);
 
         ui->tableMonthReport->addTopLevelItem(item);
+
+        saveMonthReport();
     }
 }
 
@@ -231,6 +236,11 @@ void DialogProjectPlan::on_buttonEditReport_clicked()
     if (dialog.exec() == QDialog::Accepted)
     {
         setItem(*item, dialog);
+
+        item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
+        item->setText(COL_HOURS_SPENT, "0");
+
+        saveMonthReport();
     }
 }
 
@@ -261,6 +271,8 @@ void DialogProjectPlan::on_buttonRemoveReport_clicked()
     {
         delete item;
     }
+
+    saveMonthReport();
 }
 
 void DialogProjectPlan::updatePlanDate(const QDate& date)
@@ -610,6 +622,85 @@ void DialogProjectPlan::loadMonthReport()
         item->setFont(0, font);
     }
 
+    //// Add unplanned tasks ===================================================
+
+    foreach (const QJsonValue& value, reportObject["unplanned"].toArray())
+    {
+        QJsonObject object = value.toObject();
+
+        DialogTaskEdit dialog;
+        dialog.setProjectTemplates(mProjectTemplates);
+        dialog.setPlanMode(true);
+
+        //// Get type ----------------------------------------------------------
+
+        QByteArray typeStr = object["type"].toString().toUtf8();
+
+        for (int i = 0; i < TASK_COUNT; ++i)
+        {
+            if (QByteArray(gValuesTaskTypes[i].jsonValue) == typeStr)
+            {
+                dialog.setTaskType(gValuesTaskTypes[i].value);
+            }
+        }
+
+        //// Get hours ---------------------------------------------------------
+
+        //dialog.setTaskHoursSpent(object["hours"].toInt());
+
+        //// Parse action ------------------------------------------------------
+
+        if (dialog.getTaskType() == TASK_ACTION)
+        {
+            //// Get string values ---------------------------------------------
+
+            dialog.setTaskProject(object["project"].toString());
+            dialog.setTaskProduct(object["product"].toString());
+            dialog.setTaskDescription(object["description"].toString());
+
+            //// Get action ----------------------------------------------------
+
+            QByteArray actionStr = object["action"].toString().toUtf8();
+
+            for (int i = 0; i < ACTION_COUNT; ++i)
+            {
+                if (QByteArray(gValuesActionTypes[i].jsonValue) == actionStr)
+                {
+                    dialog.setTaskActionType(gValuesActionTypes[i].value);
+                }
+            }
+
+            //// ---------------------------------------------------------------
+        }
+
+        //// Get UUID ----------------------------------------------------------
+
+        QString uuidStr;
+
+        if (object.contains("uuid"))
+        {
+            uuidStr = object["uuid"].toString();
+
+            if (QUuid::fromString(uuidStr).isNull())
+            {
+                uuidStr = QUuid::createUuid().toString();
+            }
+        }
+
+        //// Add item ----------------------------------------------------------
+
+        QTreeWidgetItem* item = new QTreeWidgetItem;
+
+        setItem(*item, dialog);
+        item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
+        item->setText(COL_HOURS_SPENT, "0");
+        item->setData(0, Qt::UserRole + 1, uuidStr);
+        item->setData(0, Qt::UserRole + 2, false);
+
+        ui->tableMonthReport->addTopLevelItem(item);
+
+    }
+
     //// =======================================================================
 }
 
@@ -625,6 +716,8 @@ void DialogProjectPlan::savePlan()
     QJsonObject reportObject;
 
     QJsonArray taskArray;
+
+    //// Planned items ---------------------------------------------------------
 
     const int count = ui->tablePlan->topLevelItemCount();
 
@@ -710,6 +803,152 @@ void DialogProjectPlan::savePlan()
 
     QString taskPath(taskDir.absoluteFilePath(fileName));
     QString taskPathBak(taskDir.absoluteFilePath(fileName + ".bak"));
+
+    QFile::remove(taskPathBak);
+    QFile::rename(taskPath, taskPathBak);
+
+    //// Save task backup file =================================================
+
+    QFile taskFile(taskPath);
+
+    if (not taskFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно записать файл отчета"));
+        return;
+    }
+
+    QJsonDocument reportDocument(reportObject);
+
+    taskFile.write(reportDocument.toJson());
+
+    taskFile.close();
+
+    //// Make plan directory hidden (for Windows) ==============================
+
+#ifdef Q_OS_WIN
+    SetFileAttributes(reinterpret_cast<LPCWSTR>(taskDir.absolutePath().utf16()), FILE_ATTRIBUTE_HIDDEN);
+#endif
+
+    //// Remove backup file ====================================================
+
+    QFile::remove(taskPathBak);
+
+    //// =======================================================================
+}
+
+void DialogProjectPlan::saveMonthReport()
+{
+    QDate date;
+    date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+
+    //// Get task file paths ===================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        taskDir.mkdir(mSettings.getWorkPath());
+
+        if (not taskDir.cd(mSettings.getWorkPath()))
+        {
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для отчетов"));
+            return;
+        }
+    }
+
+    QString planDir = ".plan";
+
+    if (not taskDir.cd(planDir))
+    {
+        taskDir.mkdir(planDir);
+
+        if (not taskDir.cd(planDir))
+        {
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для планов"));
+            return;
+        }
+    }
+
+    QString fileName = date.toString("yyyy-MM") +".json";
+
+    QString taskPath(taskDir.absoluteFilePath(fileName));
+    QString taskPathBak(taskDir.absoluteFilePath(fileName + ".bak"));
+
+    //// Open file =============================================================
+
+    QFile file(taskPath);
+
+    if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return;
+    }
+
+    QByteArray taskByteArray = file.readAll();
+
+    //// Load JSON =============================================================
+
+    QJsonDocument taskDocument = QJsonDocument::fromJson(taskByteArray);
+
+    QJsonObject reportObject = taskDocument.object();
+
+    //// Add unplanned tesks ===================================================
+
+    QJsonArray taskArray;
+
+    //// Planned items ---------------------------------------------------------
+
+    const int count = ui->tableMonthReport->topLevelItemCount();
+
+    for (int i = 0; i < count; ++i)
+    {
+        const QTreeWidgetItem* item = ui->tableMonthReport->topLevelItem(i);
+
+        bool readonly = item->data(0, Qt::UserRole + 2).toBool();
+        if (readonly)
+        {
+            continue;
+        }
+
+        QJsonObject taskObject;
+
+        int taskId = item->data(COL_TYPE, Qt::UserRole).toInt();
+        if (taskId >= TASK_COUNT)
+        {
+            //TODO: error
+            taskId = 0;
+        }
+
+        taskObject["type"]  = QString::fromUtf8(gValuesTaskTypes[taskId].jsonValue);
+//        taskObject["hours"] = item->data(COL_HOURS_SPENT, Qt::UserRole).toInt();
+
+        if (item->data(COL_TYPE, Qt::UserRole).toInt() == TASK_ACTION)
+        {
+            int actionId = item->data(COL_ACTION, Qt::UserRole).toInt();
+            if (actionId >= ACTION_COUNT)
+            {
+                //TODO: error
+                actionId = 0;
+            }
+
+            taskObject["project"]     = item->text(COL_PROJECT);
+            taskObject["product"]     = item->text(COL_PRODUCT);
+            taskObject["action"]      = QString::fromUtf8(gValuesActionTypes[actionId].jsonValue);
+            taskObject["description"] = item->text(COL_DESCRIPTION);
+
+            taskObject["uuid"]        = item->data(0, Qt::UserRole + 1).toString();
+        }
+
+        taskArray.append(taskObject);
+
+    }
+
+    reportObject["unplanned"] = taskArray;
+
+    //// =======================================================================
+
+    taskDocument = QJsonDocument(reportObject);
+
+    //// Create backup file ====================================================
 
     QFile::remove(taskPathBak);
     QFile::rename(taskPath, taskPathBak);

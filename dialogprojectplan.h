@@ -41,6 +41,8 @@ private slots:
     void loadMonthReport();
 
     void savePlan();
+    void saveMonthReport();
+
     void exportPlan();
 
     void on_buttonMoveBack_clicked();
