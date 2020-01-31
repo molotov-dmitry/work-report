@@ -33,6 +33,8 @@ private slots:
 
     void updatePlanHours();
 
+    void changeDate();
+
     void loadPlan();
     void savePlan();
     void exportPlan();

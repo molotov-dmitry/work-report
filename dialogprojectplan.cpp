@@ -69,10 +69,10 @@ DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
             this, SLOT(on_buttonEdit_clicked()));
 
     connect(ui->boxMonths, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(loadPlan()));
+            this, SLOT(changeDate()));
 
     connect(ui->editYear, SIGNAL(valueChanged(int)),
-            this, SLOT(loadPlan()));
+            this, SLOT(changeDate()));
 
     connect(ui->widgetWorkDays, SIGNAL(daysUpdated()), this, SLOT(updatePlanHours()));
 
@@ -80,7 +80,7 @@ DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
 
     //// Load plan =============================================================
 
-    loadPlan();
+    changeDate();
 }
 
 DialogProjectPlan::~DialogProjectPlan()
@@ -217,16 +217,12 @@ void DialogProjectPlan::updatePlanHours()
     ui->labelPlanHours->setPalette(labelPalette);
 }
 
-void DialogProjectPlan::loadPlan()
+void DialogProjectPlan::changeDate()
 {
     QDate date;
     date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
 
     QDate dateNext = date.addMonths(1);
-
-    //// Clear data ============================================================
-
-    ui->tablePlan->clear();
 
     //// Set titles ============================================================
 
@@ -241,6 +237,22 @@ void DialogProjectPlan::loadPlan()
                               locale.standaloneMonthName(dateNext.month(), QLocale::LongFormat) +
                               " " + QString::number(dateNext.year()) +
                               QString::fromUtf8(" г."));
+
+    //// Reload Plan ===========================================================
+
+    loadPlan();
+}
+
+void DialogProjectPlan::loadPlan()
+{
+    QDate date;
+    date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+
+    QDate dateNext = date.addMonths(1);
+
+    //// Clear data ============================================================
+
+    ui->tablePlan->clear();
 
     //// Get task file paths ===================================================
 
