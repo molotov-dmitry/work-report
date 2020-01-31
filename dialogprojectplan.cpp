@@ -66,7 +66,7 @@ DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
     //// Connect ===============================================================
 
     connect(ui->tablePlan, SIGNAL(itemDoubleClicked(QTreeWidgetItem *, int)),
-            this, SLOT(on_buttonEdit_clicked()));
+            this, SLOT(on_buttonEditPlan_clicked()));
 
     connect(ui->boxMonths, SIGNAL(currentIndexChanged(int)),
             this, SLOT(changeDate()));
@@ -88,7 +88,7 @@ DialogProjectPlan::~DialogProjectPlan()
     delete ui;
 }
 
-void DialogProjectPlan::on_buttonAdd_clicked()
+void DialogProjectPlan::on_buttonAddPlan_clicked()
 {
     DialogTaskEdit dialog;
     dialog.setProjectTemplates(mProjectTemplates);
@@ -111,7 +111,7 @@ void DialogProjectPlan::on_buttonAdd_clicked()
     }
 }
 
-void DialogProjectPlan::on_buttonEdit_clicked()
+void DialogProjectPlan::on_buttonEditPlan_clicked()
 {
     QList<QTreeWidgetItem*> items = ui->tablePlan->selectedItems();
     if (items.isEmpty())
@@ -153,7 +153,7 @@ void DialogProjectPlan::on_buttonEdit_clicked()
     }
 }
 
-void DialogProjectPlan::on_buttonRemove_clicked()
+void DialogProjectPlan::on_buttonRemovePlan_clicked()
 {
     QList<QTreeWidgetItem*> items = ui->tablePlan->selectedItems();
     if (items.isEmpty())
@@ -174,6 +174,96 @@ void DialogProjectPlan::on_buttonRemove_clicked()
     updatePlanHours();
 
     savePlan();
+}
+
+void DialogProjectPlan::on_buttonAddReport_clicked()
+{
+    DialogTaskEdit dialog;
+    dialog.setProjectTemplates(mProjectTemplates);
+    dialog.setPlanMode(true);
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        QTreeWidgetItem* item = new QTreeWidgetItem;
+
+        setItem(*item, dialog);
+
+        QUuid uuid = QUuid::createUuid();
+        item->setData(0, Qt::UserRole + 1, uuid.toString());
+        item->setData(0, Qt::UserRole + 2, false);
+
+        ui->tableMonthReport->addTopLevelItem(item);
+    }
+}
+
+void DialogProjectPlan::on_buttonEditReport_clicked()
+{
+    QList<QTreeWidgetItem*> items = ui->tableMonthReport->selectedItems();
+    if (items.isEmpty())
+    {
+        return;
+    }
+
+    QTreeWidgetItem* item = items.first();
+    if (item == Q_NULLPTR)
+    {
+        return;
+    }
+
+    bool readonly = item->data(0, Qt::UserRole + 2).toBool();
+    if (readonly)
+    {
+        return;
+    }
+
+    DialogTaskEdit dialog;
+    dialog.setProjectTemplates(mProjectTemplates);
+    dialog.setPlanMode(true);
+
+    dialog.setTaskType(item->data(COL_TYPE, Qt::UserRole).toInt());
+    dialog.setTaskHoursSpent(item->data(COL_HOURS_SPENT, Qt::UserRole).toInt());
+
+    if (dialog.getTaskType() == TASK_ACTION)
+    {
+        dialog.setTaskProject(item->text(COL_PROJECT));
+        dialog.setTaskProduct(item->text(COL_PRODUCT));
+        dialog.setTaskActionType(item->data(COL_ACTION, Qt::UserRole).toInt());
+        dialog.setTaskDescription(item->text(COL_DESCRIPTION));
+    }
+
+    if (dialog.exec() == QDialog::Accepted)
+    {
+        setItem(*item, dialog);
+    }
+}
+
+void DialogProjectPlan::on_buttonRemoveReport_clicked()
+{
+    QList<QTreeWidgetItem*> items = ui->tableMonthReport->selectedItems();
+
+    for (int i = items.count() - 1; i >= 0; --i)
+    {
+        bool readonly = items.at(i)->data(0, Qt::UserRole + 2).toBool();
+        if (readonly)
+        {
+            items.removeAt(i);
+        }
+    }
+
+    if (items.isEmpty())
+    {
+        return;
+    }
+
+    if (QMessageBox::question(this, "Delete", "Delete selected item?") != QMessageBox::Yes)
+    {
+        return;
+    }
+
+    foreach (QTreeWidgetItem* item, items)
+    {
+        delete item;
+    }
 }
 
 void DialogProjectPlan::updatePlanDate(const QDate& date)

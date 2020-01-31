@@ -23,9 +23,13 @@ public:
     ~DialogProjectPlan();
 
 private slots:
-    void on_buttonAdd_clicked();
-    void on_buttonEdit_clicked();
-    void on_buttonRemove_clicked();
+    void on_buttonAddPlan_clicked();
+    void on_buttonEditPlan_clicked();
+    void on_buttonRemovePlan_clicked();
+
+    void on_buttonAddReport_clicked();
+    void on_buttonEditReport_clicked();
+    void on_buttonRemoveReport_clicked();
 
     void updatePlanDate(const QDate &date);
 

@@ -339,7 +339,7 @@
        <item row="1" column="1">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QToolButton" name="buttonAdd">
+          <widget class="QToolButton" name="buttonAddPlan">
            <property name="minimumSize">
             <size>
              <width>32</width>
@@ -353,7 +353,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="buttonEdit">
+          <widget class="QToolButton" name="buttonEditPlan">
            <property name="minimumSize">
             <size>
              <width>32</width>
@@ -367,7 +367,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="buttonRemove">
+          <widget class="QToolButton" name="buttonRemovePlan">
            <property name="minimumSize">
             <size>
              <width>32</width>
