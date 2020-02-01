@@ -490,6 +490,10 @@ void DialogProjectPlan::loadPlan()
         ui->widgetWorkDays->setWorkDays(workDaysList);
     }
 
+    //// Update plan hours =====================================================
+
+    updatePlanHours();
+
     //// =======================================================================
 }
 
