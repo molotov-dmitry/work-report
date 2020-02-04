@@ -207,6 +207,13 @@ void DialogProjectPlan::on_buttonAddReport_clicked()
         item->setData(0, Qt::UserRole + 1, uuid.toString());
         item->setData(0, Qt::UserRole + 2, false);
 
+        QFont fontBold = ui->tableMonthReport->font();
+        fontBold.setBold(true);
+        for (int i = 1; i < ui->tableMonthReport->columnCount(); ++i)
+        {
+            item->setFont(i, fontBold);
+        }
+
         ui->tableMonthReport->addTopLevelItem(item);
 
         saveMonthReport();
@@ -635,10 +642,12 @@ void DialogProjectPlan::loadMonthReport()
 
         //// Set bold font -----------------------------------------------------
 
-        QFont font = ui->tableMonthReport->font();
-        font.setBold(true);
-
-        item->setFont(0, font);
+        QFont fontBold = ui->tableMonthReport->font();
+        fontBold.setBold(true);
+        for (int i = 0; i < ui->tableMonthReport->columnCount(); ++i)
+        {
+            item->setFont(i, fontBold);
+        }
     }
 
     //// Add unplanned tasks ===================================================
@@ -716,6 +725,13 @@ void DialogProjectPlan::loadMonthReport()
         item->setData(0, Qt::UserRole + 1, uuidStr);
         item->setData(0, Qt::UserRole + 2, false);
 
+        QFont fontBold = ui->tableMonthReport->font();
+        fontBold.setBold(true);
+        for (int i = 1; i < ui->tableMonthReport->columnCount(); ++i)
+        {
+            item->setFont(i, fontBold);
+        }
+
         ui->tableMonthReport->addTopLevelItem(item);
 
     }
@@ -746,10 +762,12 @@ void DialogProjectPlan::loadMonthReport()
 
         //// Set bold font -----------------------------------------------------
 
-        QFont font = ui->tableMonthReport->font();
-        font.setBold(true);
-
-        item->setFont(0, font);
+        QFont fontBold = ui->tableMonthReport->font();
+        fontBold.setBold(true);
+        for (int i = 0; i < ui->tableMonthReport->columnCount(); ++i)
+        {
+            item->setFont(i, fontBold);
+        }
     }
 
     //// Load tasks ============================================================
@@ -846,6 +864,28 @@ void DialogProjectPlan::loadMonthTasks()
 
             int count = ui->tableMonthReport->topLevelItemCount();
             QTreeWidgetItem* rootItem = ui->tableMonthReport->topLevelItem(count - 1);
+
+            for (int i = 0; i < count - 1; ++i)
+            {
+                QTreeWidgetItem* check = ui->tableMonthReport->topLevelItem(i);
+
+                if (item->text(COL_R_ACTION) != check->text(COL_R_ACTION))
+                {
+                    continue;
+                }
+
+                if (item->text(COL_R_PROJECT) != check->text(COL_R_PROJECT))
+                {
+                    continue;
+                }
+
+                if (item->text(COL_R_PRODUCT) != check->text(COL_R_PRODUCT))
+                {
+                    continue;
+                }
+
+                rootItem = check;
+            }
 
             //// Add item ------------------------------------------------------
 
