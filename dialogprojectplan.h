@@ -40,6 +40,9 @@ private slots:
     void loadPlan();
     void loadMonthReport();
 
+    void loadMonthTasks();
+    void updateMonthReportHours();
+
     void savePlan();
     void saveMonthReport();
 
@@ -58,7 +61,7 @@ private:
     const ProjectTemplates& mProjectTemplates;
     const Settings&         mSettings;
 
-    void setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog);
+    void setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog, bool isReport = false);
 };
 
 #endif // DIALOGPROJECTPLAN_H

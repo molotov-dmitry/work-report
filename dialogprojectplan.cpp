@@ -15,6 +15,8 @@
 #include "settings.h"
 #include "dialogtaskedit.h"
 
+#include "common/reportimport.h"
+
 enum Column
 {
     COL_TYPE,
@@ -25,6 +27,19 @@ enum Column
     COL_DESCRIPTION,
 
     COLUMN_COUNT
+};
+
+enum ColumnReport
+{
+    COL_R_TYPE,
+    COL_R_HOURS_PLANNED,
+    COL_R_HOURS_SPENT,
+    COL_R_PROJECT,
+    COL_R_PRODUCT,
+    COL_R_ACTION,
+    COL_R_DESCRIPTION,
+
+    COLUMN_REPORT_COUNT
 };
 
 DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
@@ -183,7 +198,7 @@ void DialogProjectPlan::on_buttonAddReport_clicked()
     {
         QTreeWidgetItem* item = new QTreeWidgetItem;
 
-        setItem(*item, dialog);
+        setItem(*item, dialog, true);
 
         item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
         item->setText(COL_HOURS_SPENT, "0");
@@ -222,23 +237,23 @@ void DialogProjectPlan::on_buttonEditReport_clicked()
     dialog.setProjectTemplates(mProjectTemplates);
     dialog.setPlanMode(true);
 
-    dialog.setTaskType(item->data(COL_TYPE, Qt::UserRole).toInt());
-    dialog.setTaskHoursSpent(item->data(COL_HOURS_SPENT, Qt::UserRole).toInt());
+    dialog.setTaskType(item->data(COL_R_TYPE, Qt::UserRole).toInt());
+    dialog.setTaskHoursSpent(item->data(COL_R_HOURS_PLANNED, Qt::UserRole).toInt());
 
     if (dialog.getTaskType() == TASK_ACTION)
     {
-        dialog.setTaskProject(item->text(COL_PROJECT));
-        dialog.setTaskProduct(item->text(COL_PRODUCT));
-        dialog.setTaskActionType(item->data(COL_ACTION, Qt::UserRole).toInt());
-        dialog.setTaskDescription(item->text(COL_DESCRIPTION));
+        dialog.setTaskProject(item->text(COL_R_PROJECT));
+        dialog.setTaskProduct(item->text(COL_R_PRODUCT));
+        dialog.setTaskActionType(item->data(COL_R_ACTION, Qt::UserRole).toInt());
+        dialog.setTaskDescription(item->text(COL_R_DESCRIPTION));
     }
 
     if (dialog.exec() == QDialog::Accepted)
     {
-        setItem(*item, dialog);
+        setItem(*item, dialog, true);
 
-        item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
-        item->setText(COL_HOURS_SPENT, "0");
+        item->setData(COL_R_HOURS_PLANNED, Qt::UserRole, 0);
+        item->setText(COL_R_HOURS_PLANNED, "0");
 
         saveMonthReport();
     }
@@ -612,7 +627,7 @@ void DialogProjectPlan::loadMonthReport()
 
         QTreeWidgetItem* item = new QTreeWidgetItem;
 
-        setItem(*item, dialog);
+        setItem(*item, dialog, true);
         item->setData(0, Qt::UserRole + 1, uuidStr);
         item->setData(0, Qt::UserRole + 2, true);
 
@@ -695,7 +710,7 @@ void DialogProjectPlan::loadMonthReport()
 
         QTreeWidgetItem* item = new QTreeWidgetItem;
 
-        setItem(*item, dialog);
+        setItem(*item, dialog, true);
         item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
         item->setText(COL_HOURS_SPENT, "0");
         item->setData(0, Qt::UserRole + 1, uuidStr);
@@ -722,7 +737,7 @@ void DialogProjectPlan::loadMonthReport()
 
         QTreeWidgetItem* item = new QTreeWidgetItem;
 
-        setItem(*item, dialog);
+        setItem(*item, dialog, true);
         item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
         item->setText(COL_HOURS_SPENT, "0");
         item->setData(0, Qt::UserRole + 2, true);
@@ -737,7 +752,159 @@ void DialogProjectPlan::loadMonthReport()
         item->setFont(0, font);
     }
 
+    //// Load tasks ============================================================
+
+    loadMonthTasks();
+
     //// =======================================================================
+}
+
+void DialogProjectPlan::loadMonthTasks()
+{
+    QDate date;
+    date.setDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+
+    //// Get task file paths ===================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        // Warning
+        return;
+    }
+
+    QString dirName = date.toString("yyyy-MM");
+
+    if (not taskDir.cd(dirName))
+    {
+        // Warning
+        return;
+    }
+
+    QStringList filters;
+    filters << "*.csv";
+
+    //// Load entries ==========================================================
+
+    foreach (const QFileInfo& d, taskDir.entryInfoList(filters, QDir::Files))
+    {
+        ReportImport importer;
+        QList<ReportEntry> entries;
+
+        if (not importer.readReport(d.absoluteFilePath(), entries))
+        {
+            QString error = importer.lastError();
+
+            if (importer.lastErrorLine() > -1)
+            {
+                error.append(QString::asprintf("\nat line %d",
+                                               importer.lastErrorLine()));
+            }
+
+            QMessageBox::critical(this,
+                                  QString::fromUtf8("Импорт"),
+                                  error);
+
+            return;
+        }
+
+        foreach (const ReportEntry& report, entries)
+        {
+            QTreeWidgetItem* item = new QTreeWidgetItem;
+
+            //// Finn report data ----------------------------------------------
+
+            item->setIcon(COL_R_TYPE, QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
+
+            item->setData(COL_R_TYPE, Qt::UserRole, report.type);
+            item->setText(COL_R_TYPE, QString::fromUtf8(gValuesTaskTypes[report.type].displayValue));
+
+            item->setData(COL_R_HOURS_SPENT, Qt::UserRole, report.hours);
+            item->setText(COL_R_HOURS_SPENT, QString::number(report.hours));
+
+            if (report.type == TASK_ACTION)
+            {
+                item->setText(COL_R_PROJECT, report.project);
+
+                item->setText(COL_R_PRODUCT, report.product);
+
+                item->setData(COL_R_ACTION, Qt::UserRole, report.action);
+                item->setText(COL_R_ACTION, QString::fromUtf8(gValuesActionTypes[report.action].displayValue));
+
+                item->setText(COL_R_DESCRIPTION, report.description);
+            }
+            else
+            {
+                item->setText(COL_R_PROJECT, QString());
+                item->setText(COL_R_PRODUCT, QString());
+                item->setText(COL_R_ACTION, QString());
+                item->setText(COL_R_DESCRIPTION, QString());
+            }
+
+            //// Match with planned task ---------------------------------------
+
+            int count = ui->tableMonthReport->topLevelItemCount();
+            QTreeWidgetItem* rootItem = ui->tableMonthReport->topLevelItem(count - 1);
+
+            //// Add item ------------------------------------------------------
+
+            if (rootItem != nullptr)
+            {
+                rootItem->addChild(item);
+            }
+        }
+    }
+
+    //// Update hours ==========================================================
+
+    updateMonthReportHours();
+}
+
+void DialogProjectPlan::updateMonthReportHours()
+{
+    int hoursPlanned = 0;
+    int hoursSpent = 0;
+
+    int count = ui->tableMonthReport->topLevelItemCount();
+
+    for (int i = 0; i < count; ++i)
+    {
+        QTreeWidgetItem* rootItem = ui->tableMonthReport->topLevelItem(i);
+
+        hoursPlanned += rootItem->data(COL_R_HOURS_PLANNED, Qt::UserRole).toInt();
+
+        int taskCount = rootItem->childCount();
+
+        int hoursSpentPlan = 0;
+
+        for (int j = 0; j < taskCount; ++j)
+        {
+            QTreeWidgetItem* item = rootItem->child(j);
+
+            hoursSpentPlan += item->data(COL_R_HOURS_SPENT, Qt::UserRole).toInt();
+        }
+
+        rootItem->setData(COL_R_HOURS_SPENT, Qt::UserRole, hoursSpentPlan);
+        rootItem->setText(COL_R_HOURS_SPENT, QString::number(hoursSpentPlan));
+
+        hoursSpent += hoursSpentPlan;
+    }
+
+    ui->labelReportHours->setText(QString::asprintf("%d / %d", hoursSpent, hoursPlanned));
+
+    QPalette labelPalette = this->palette();
+
+    if (hoursSpent == hoursPlanned)
+    {
+        labelPalette.setColor(QPalette::WindowText, QColor(56, 142, 60));
+    }
+    else
+    {
+        labelPalette.setColor(QPalette::WindowText, QColor(183, 28, 28));
+    }
+
+    ui->labelReportHours->setPalette(labelPalette);
 }
 
 void DialogProjectPlan::savePlan()
@@ -947,7 +1114,7 @@ void DialogProjectPlan::saveMonthReport()
 
         QJsonObject taskObject;
 
-        int taskId = item->data(COL_TYPE, Qt::UserRole).toInt();
+        int taskId = item->data(COL_R_TYPE, Qt::UserRole).toInt();
         if (taskId >= TASK_COUNT)
         {
             //TODO: error
@@ -955,21 +1122,21 @@ void DialogProjectPlan::saveMonthReport()
         }
 
         taskObject["type"]  = QString::fromUtf8(gValuesTaskTypes[taskId].jsonValue);
-//        taskObject["hours"] = item->data(COL_HOURS_SPENT, Qt::UserRole).toInt();
+//        taskObject["hours"] = item->data(COL_R_HOURS_SPENT, Qt::UserRole).toInt();
 
-        if (item->data(COL_TYPE, Qt::UserRole).toInt() == TASK_ACTION)
+        if (item->data(COL_R_TYPE, Qt::UserRole).toInt() == TASK_ACTION)
         {
-            int actionId = item->data(COL_ACTION, Qt::UserRole).toInt();
+            int actionId = item->data(COL_R_ACTION, Qt::UserRole).toInt();
             if (actionId >= ACTION_COUNT)
             {
                 //TODO: error
                 actionId = 0;
             }
 
-            taskObject["project"]     = item->text(COL_PROJECT);
-            taskObject["product"]     = item->text(COL_PRODUCT);
+            taskObject["project"]     = item->text(COL_R_PROJECT);
+            taskObject["product"]     = item->text(COL_R_PRODUCT);
             taskObject["action"]      = QString::fromUtf8(gValuesActionTypes[actionId].jsonValue);
-            taskObject["description"] = item->text(COL_DESCRIPTION);
+            taskObject["description"] = item->text(COL_R_DESCRIPTION);
 
             taskObject["uuid"]        = item->data(0, Qt::UserRole + 1).toString();
         }
@@ -1023,33 +1190,40 @@ void DialogProjectPlan::exportPlan()
 
 }
 
-void DialogProjectPlan::setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog)
+void DialogProjectPlan::setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog, bool isReport)
 {
-    item.setIcon(COL_TYPE, QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
+    int col_type        = isReport ? COL_R_TYPE : COL_TYPE;
+    int col_hours       = isReport ? COL_R_HOURS_PLANNED : COL_HOURS_SPENT;
+    int col_project     = isReport ? COL_R_PROJECT : COL_PROJECT;
+    int col_product     = isReport ? COL_R_PRODUCT : COL_PRODUCT;
+    int col_action      = isReport ? COL_R_ACTION : COL_ACTION;
+    int col_description = isReport ? COL_R_DESCRIPTION : COL_DESCRIPTION;
 
-    item.setData(COL_TYPE, Qt::UserRole, dialog.getTaskType());
-    item.setText(COL_TYPE, dialog.getTaskTypeString());
+    item.setIcon(col_type, QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
 
-    item.setData(COL_HOURS_SPENT, Qt::UserRole, dialog.getTaskHoursSpent());
-    item.setText(COL_HOURS_SPENT, QString::number(dialog.getTaskHoursSpent()));
+    item.setData(col_type, Qt::UserRole, dialog.getTaskType());
+    item.setText(col_type, dialog.getTaskTypeString());
+
+    item.setData(col_hours, Qt::UserRole, dialog.getTaskHoursSpent());
+    item.setText(col_hours, QString::number(dialog.getTaskHoursSpent()));
 
     if (dialog.getTaskType() == TASK_ACTION)
     {
-        item.setText(COL_PROJECT, dialog.getTaskProject());
+        item.setText(col_project, dialog.getTaskProject());
 
-        item.setText(COL_PRODUCT, dialog.getTaskProduct());
+        item.setText(col_product, dialog.getTaskProduct());
 
-        item.setData(COL_ACTION, Qt::UserRole, dialog.getTaskActionType());
-        item.setText(COL_ACTION, dialog.getTaskActionTypeString());
+        item.setData(col_action, Qt::UserRole, dialog.getTaskActionType());
+        item.setText(col_action, dialog.getTaskActionTypeString());
 
-        item.setText(COL_DESCRIPTION, dialog.getTaskDescription());
+        item.setText(col_description, dialog.getTaskDescription());
     }
     else
     {
-        item.setText(COL_PROJECT, QString());
-        item.setText(COL_PRODUCT, QString());
-        item.setText(COL_ACTION, QString());
-        item.setText(COL_DESCRIPTION, QString());
+        item.setText(col_project,     QString());
+        item.setText(col_product,     QString());
+        item.setText(col_action,      QString());
+        item.setText(col_description, QString());
     }
 }
 
