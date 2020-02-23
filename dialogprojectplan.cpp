@@ -478,7 +478,7 @@ void DialogProjectPlan::loadPlan()
         {
             uuidStr = object["uuid"].toString();
 
-            if (QUuid::fromString(uuidStr).isNull())
+            if (QUuid(uuidStr.toLatin1()).isNull())
             {
                 uuidStr = QUuid::createUuid().toString();
             }
@@ -624,7 +624,7 @@ void DialogProjectPlan::loadMonthReport()
         {
             uuidStr = object["uuid"].toString();
 
-            if (QUuid::fromString(uuidStr).isNull())
+            if (QUuid(uuidStr.toLatin1()).isNull())
             {
                 uuidStr = QUuid::createUuid().toString();
             }
@@ -709,7 +709,7 @@ void DialogProjectPlan::loadMonthReport()
         {
             uuidStr = object["uuid"].toString();
 
-            if (QUuid::fromString(uuidStr).isNull())
+            if (QUuid(uuidStr.toLatin1()).isNull())
             {
                 uuidStr = QUuid::createUuid().toString();
             }
