@@ -4,6 +4,7 @@
 #include <QDialog>
 
 #include "projecttemplates.h"
+#include "plannedtasks.h"
 
 namespace Ui {
 class DialogTaskEdit;
@@ -26,6 +27,7 @@ public:
     int     getTaskActionType() const;
     QString getTaskActionTypeString() const;
     QString getTaskDescription() const;
+    QString getTaskPlan() const;
 
     int     getTaskResult() const;
     QString getTaskResultString() const;
@@ -40,20 +42,27 @@ public:
     void setTaskProduct(const QString& product);
     void setTaskActionType(int actionType);
     void setTaskDescription(const QString& description);
+    void setTaskPlan(const QString& plan);
     void setTaskResult(int result);
 
     void setProjectTemplates(const ProjectTemplates& projects);
+    void setPlannedTasks(const PlannedTasks& tasks);
 
 private slots:
 
     void setHoursPreset();
 
+    void updatePlannedTask();
+
     void on_editProject_currentTextChanged(const QString &arg1);
+    void on_editProduct_currentTextChanged(const QString &arg1);
+    void on_boxAction_currentIndexChanged(int index);
 
 private:
     Ui::DialogTaskEdit *ui;
 
     QMap<QString, QStringList> mProjects;
+    QMap< QPair<QString, QString>, QList<PlannedTask> > mPlannedTasks;
 };
 
 #endif // DIALOGTASKEDIT_H

@@ -327,6 +327,8 @@ void MainWindow::setItem(QTreeWidgetItem &item, const DialogTaskEdit &dialog)
 
         item.setData(COL_RESULT, Qt::UserRole, dialog.getTaskResult());
         item.setText(COL_RESULT, dialog.getTaskResultString());
+
+        item.setText(COL_PLAN, dialog.getTaskPlan());
     }
     else
     {
@@ -335,6 +337,7 @@ void MainWindow::setItem(QTreeWidgetItem &item, const DialogTaskEdit &dialog)
         item.setText(COL_ACTION, QString());
         item.setText(COL_DESCRIPTION, QString());
         item.setText(COL_RESULT, QString());
+        item.setText(COL_PLAN, QString());
     }
 }
 
@@ -535,6 +538,7 @@ void MainWindow::loadData()
             dialog.setTaskProject(object["project"].toString());
             dialog.setTaskProduct(object["product"].toString());
             dialog.setTaskDescription(object["description"].toString());
+            dialog.setTaskPlan(object["plan"].toString());
 
             //// Get action ----------------------------------------------------
 
@@ -625,6 +629,7 @@ void MainWindow::saveData()
             taskObject["product"]     = item->text(COL_PRODUCT);
             taskObject["action"]      = QString::fromUtf8(gValuesActionTypes[actionId].jsonValue);
             taskObject["description"] = item->text(COL_DESCRIPTION);
+            taskObject["plan"]        = item->text(COL_PLAN);
             taskObject["result"]      = QString::fromUtf8(gValuesResults[resultId].jsonValue);
         }
 
@@ -686,8 +691,12 @@ void MainWindow::saveData()
 
 void MainWindow::on_actionTaskNew_triggered()
 {
+    PlannedTasks tasks(mSettings, ui->dateFrom->date());
+
     DialogTaskEdit dialog;
     dialog.setProjectTemplates(mProjectTemplates);
+    dialog.setPlannedTasks(tasks);
+
 
     if (dialog.exec() == QDialog::Accepted)
     {
@@ -719,8 +728,11 @@ void MainWindow::on_actionTaskEdit_triggered()
         return;
     }
 
+    PlannedTasks tasks(mSettings, ui->dateFrom->date());
+
     DialogTaskEdit dialog;
     dialog.setProjectTemplates(mProjectTemplates);
+    dialog.setPlannedTasks(tasks);
 
     dialog.setTaskType(item->data(COL_TYPE, Qt::UserRole).toInt());
     dialog.setTaskHoursSpent(item->data(COL_HOURS_SPENT, Qt::UserRole).toInt());
@@ -731,6 +743,7 @@ void MainWindow::on_actionTaskEdit_triggered()
         dialog.setTaskProduct(item->text(COL_PRODUCT));
         dialog.setTaskActionType(item->data(COL_ACTION, Qt::UserRole).toInt());
         dialog.setTaskDescription(item->text(COL_DESCRIPTION));
+        dialog.setTaskPlan(item->text(COL_PLAN));
         dialog.setTaskResult(item->data(COL_RESULT, Qt::UserRole).toInt());
     }
 

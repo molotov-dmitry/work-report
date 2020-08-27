@@ -27,10 +27,6 @@ private slots:
     void on_buttonEditPlan_clicked();
     void on_buttonRemovePlan_clicked();
 
-    void on_buttonAddReport_clicked();
-    void on_buttonEditReport_clicked();
-    void on_buttonRemoveReport_clicked();
-
     void updatePlanDate(const QDate &date);
 
     void updatePlanHours();

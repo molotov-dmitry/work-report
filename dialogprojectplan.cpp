@@ -188,115 +188,6 @@ void DialogProjectPlan::on_buttonRemovePlan_clicked()
     savePlan();
 }
 
-void DialogProjectPlan::on_buttonAddReport_clicked()
-{
-    DialogTaskEdit dialog;
-    dialog.setProjectTemplates(mProjectTemplates);
-    dialog.setPlanMode(true);
-
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        QTreeWidgetItem* item = new QTreeWidgetItem;
-
-        setItem(*item, dialog, true);
-
-        item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
-        item->setText(COL_HOURS_SPENT, "0");
-
-        QUuid uuid = QUuid::createUuid();
-        item->setData(0, Qt::UserRole + 1, uuid.toString());
-        item->setData(0, Qt::UserRole + 2, false);
-
-        QFont fontBold = ui->tableMonthReport->font();
-        fontBold.setBold(true);
-        for (int i = 1; i < ui->tableMonthReport->columnCount(); ++i)
-        {
-            item->setFont(i, fontBold);
-        }
-
-        ui->tableMonthReport->addTopLevelItem(item);
-
-        saveMonthReport();
-    }
-}
-
-void DialogProjectPlan::on_buttonEditReport_clicked()
-{
-    QList<QTreeWidgetItem*> items = ui->tableMonthReport->selectedItems();
-    if (items.isEmpty())
-    {
-        return;
-    }
-
-    QTreeWidgetItem* item = items.first();
-    if (item == Q_NULLPTR)
-    {
-        return;
-    }
-
-    bool readonly = item->data(0, Qt::UserRole + 2).toBool();
-    if (readonly)
-    {
-        return;
-    }
-
-    DialogTaskEdit dialog;
-    dialog.setProjectTemplates(mProjectTemplates);
-    dialog.setPlanMode(true);
-
-    dialog.setTaskType(item->data(COL_R_TYPE, Qt::UserRole).toInt());
-    dialog.setTaskHoursSpent(item->data(COL_R_HOURS_PLANNED, Qt::UserRole).toInt());
-
-    if (dialog.getTaskType() == TASK_ACTION)
-    {
-        dialog.setTaskProject(item->text(COL_R_PROJECT));
-        dialog.setTaskProduct(item->text(COL_R_PRODUCT));
-        dialog.setTaskActionType(item->data(COL_R_ACTION, Qt::UserRole).toInt());
-        dialog.setTaskDescription(item->text(COL_R_DESCRIPTION));
-    }
-
-    if (dialog.exec() == QDialog::Accepted)
-    {
-        setItem(*item, dialog, true);
-
-        item->setData(COL_R_HOURS_PLANNED, Qt::UserRole, 0);
-        item->setText(COL_R_HOURS_PLANNED, "0");
-
-        saveMonthReport();
-    }
-}
-
-void DialogProjectPlan::on_buttonRemoveReport_clicked()
-{
-    QList<QTreeWidgetItem*> items = ui->tableMonthReport->selectedItems();
-
-    for (int i = items.count() - 1; i >= 0; --i)
-    {
-        bool readonly = items.at(i)->data(0, Qt::UserRole + 2).toBool();
-        if (readonly)
-        {
-            items.removeAt(i);
-        }
-    }
-
-    if (items.isEmpty())
-    {
-        return;
-    }
-
-    if (QMessageBox::question(this, "Delete", "Delete selected item?") != QMessageBox::Yes)
-    {
-        return;
-    }
-
-    foreach (QTreeWidgetItem* item, items)
-    {
-        delete item;
-    }
-
-    saveMonthReport();
-}
-
 void DialogProjectPlan::updatePlanDate(const QDate& date)
 {
     //// Update work days widget ===============================================
@@ -1232,12 +1123,12 @@ void DialogProjectPlan::exportPlan()
 
 void DialogProjectPlan::setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog, bool isReport)
 {
-    int col_type        = isReport ? COL_R_TYPE : COL_TYPE;
-    int col_hours       = isReport ? COL_R_HOURS_PLANNED : COL_HOURS_SPENT;
-    int col_project     = isReport ? COL_R_PROJECT : COL_PROJECT;
-    int col_product     = isReport ? COL_R_PRODUCT : COL_PRODUCT;
-    int col_action      = isReport ? COL_R_ACTION : COL_ACTION;
-    int col_description = isReport ? COL_R_DESCRIPTION : COL_DESCRIPTION;
+    int col_type        = isReport ? (int)COL_R_TYPE          : (int)COL_TYPE;
+    int col_hours       = isReport ? (int)COL_R_HOURS_PLANNED : (int)COL_HOURS_SPENT;
+    int col_project     = isReport ? (int)COL_R_PROJECT       : (int)COL_PROJECT;
+    int col_product     = isReport ? (int)COL_R_PRODUCT       : (int)COL_PRODUCT;
+    int col_action      = isReport ? (int)COL_R_ACTION        : (int)COL_ACTION;
+    int col_description = isReport ? (int)COL_R_DESCRIPTION   : (int)COL_DESCRIPTION;
 
     item.setIcon(col_type, QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
 

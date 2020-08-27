@@ -33,6 +33,7 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     dialogtaskedit.cpp \
+    plannedtasks.cpp \
     settings.cpp \
     dialogsettingsedit.cpp \
     projecttemplates.cpp \
@@ -47,6 +48,7 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     dialogtaskedit.h \
+    plannedtasks.h \
     settings.h \
     dialogsettingsedit.h \
     projecttemplates.h \

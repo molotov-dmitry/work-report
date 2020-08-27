@@ -104,6 +104,11 @@ QString DialogTaskEdit::getTaskDescription() const
     return ui->editDescription->text().replace("\n", "\r");
 }
 
+QString DialogTaskEdit::getTaskPlan() const
+{
+    return ui->editPlan->currentText();
+}
+
 int DialogTaskEdit::getTaskResult() const
 {
     return ui->boxResult->currentIndex();
@@ -117,6 +122,7 @@ QString DialogTaskEdit::getTaskResultString() const
 void DialogTaskEdit::setPlanMode(bool planMode)
 {
     ui->boxResult->setDisabled(planMode);
+    ui->editPlan->setDisabled(planMode);
 }
 
 void DialogTaskEdit::setTaskType(int taskType)
@@ -149,6 +155,11 @@ void DialogTaskEdit::setTaskDescription(const QString &description)
     ui->editDescription->setText(description);
 }
 
+void DialogTaskEdit::setTaskPlan(const QString& plan)
+{
+    ui->editPlan->setCurrentText(plan);
+}
+
 void DialogTaskEdit::setTaskResult(int result)
 {
     ui->boxResult->setCurrentIndex(result);
@@ -166,11 +177,56 @@ void DialogTaskEdit::setProjectTemplates(const ProjectTemplates &projects)
     }
 }
 
+void DialogTaskEdit::setPlannedTasks(const PlannedTasks& tasks)
+{
+    mPlannedTasks = tasks.getPlannedTasks();
+}
+
 void DialogTaskEdit::setHoursPreset()
 {
     QToolButton* button = static_cast<QToolButton*>(sender());
 
     ui->editHoursSpent->setValue(button->text().toInt());
+}
+
+void DialogTaskEdit::updatePlannedTask()
+{
+    QString text = ui->editPlan->currentText();
+
+    ui->editPlan->clear();
+
+    QPair<QString, QString> key(ui->editProject->currentText(),
+                                ui->editProduct->currentText());
+
+    bool actionSet = false;
+    QString newText;
+
+    foreach(const PlannedTask& task, mPlannedTasks.value(key))
+    {
+        ui->editPlan->addItem(task.description);
+
+        if (text.isEmpty() && not actionSet)
+        {
+            if (newText.isEmpty())
+            {
+                newText = task.description;
+            }
+
+            if (task.action == ui->boxAction->currentIndex())
+            {
+                actionSet = true;
+            }
+        }
+    }
+
+    if (not text.isEmpty())
+    {
+        ui->editPlan->setCurrentText(text);
+    }
+    else
+    {
+        ui->editPlan->setCurrentText(newText);
+    }
 }
 
 void DialogTaskEdit::on_editProject_currentTextChanged(const QString &arg1)
@@ -188,4 +244,14 @@ void DialogTaskEdit::on_editProject_currentTextChanged(const QString &arg1)
     {
         ui->editProduct->setCurrentText(text);
     }
+}
+
+void DialogTaskEdit::on_editProduct_currentTextChanged(const QString &arg1)
+{
+    updatePlannedTask();
+}
+
+void DialogTaskEdit::on_boxAction_currentIndexChanged(int index)
+{
+    updatePlannedTask();
 }

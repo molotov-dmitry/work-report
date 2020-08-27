@@ -26,6 +26,7 @@ enum Column
     COL_ACTION,
     COL_DESCRIPTION,
     COL_RESULT,
+    COL_PLAN,
 
     COLUMN_COUNT
 };
