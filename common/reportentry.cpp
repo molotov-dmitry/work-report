@@ -30,8 +30,12 @@ bool compareReportEntries(const ReportEntry &re1, const ReportEntry &re2)
     {
         return (re1.hours < re2.hours);
     }
-    else
+    else if (re1.result != re2.result)
     {
         return (re1.result < re2.result);
+    }
+    else
+    {
+        return (re1.plan < re2.plan);
     }
 }

@@ -108,11 +108,12 @@ bool ReportImport::toReportEntry(const QStringList &line, ReportEntry &entry)
         COL_ACTION,
         COL_DESCRIPTION,
         COL_RESULT,
+        COL_PLAN,
 
         COL_COUNT
     };
 
-    if (line.size() != COL_COUNT)
+    if (line.size() != COL_COUNT && line.size() != COL_COUNT - 1)
     {
         mLastError = QString::asprintf("Wrong column count: %d", line.size());
         return false;
@@ -172,7 +173,7 @@ bool ReportImport::toReportEntry(const QStringList &line, ReportEntry &entry)
         entry.product       = line.at(COL_PRODUCT);
         entry.description   = line.at(COL_DESCRIPTION);
 
-        //// Action ----------------------------------------------------------------
+        //// Action ------------------------------------------------------------
 
         entry.action = (TaskActionType)findId(line.at(COL_ACTION), gValuesActionTypes, ACTION_COUNT);
 
@@ -182,15 +183,22 @@ bool ReportImport::toReportEntry(const QStringList &line, ReportEntry &entry)
             return false;
         }
 
-        //// Result ----------------------------------------------------------------
+        //// Result ------------------------------------------------------------
 
-        entry.result = (TaskResult)findId(line.at(COL_RESULT), gValuesResults, RESULT_COUNT);;
+        entry.result = (TaskResult)findId(line.at(COL_RESULT), gValuesResults, RESULT_COUNT);
 
         if (entry.result == RESULT_COUNT)
         {
             mLastError = "Wrong result value: " + line.at(COL_RESULT);
             return false;
         }
+    }
+
+    //// Get plan ==============================================================
+
+    if (line.size() > COL_PLAN)
+    {
+        entry.plan = line.at(COL_PLAN);
     }
 
     //// =======================================================================

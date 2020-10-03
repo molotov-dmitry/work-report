@@ -21,6 +21,8 @@ struct ReportEntry
     TaskActionType  action;
     QString         description;
     TaskResult      result;
+
+    QString         plan;
 };
 
 bool compareReportEntries(const ReportEntry& re1, const ReportEntry& re2);
