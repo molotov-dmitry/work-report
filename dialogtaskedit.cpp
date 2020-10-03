@@ -180,6 +180,8 @@ void DialogTaskEdit::setProjectTemplates(const ProjectTemplates &projects)
 void DialogTaskEdit::setPlannedTasks(const PlannedTasks& tasks)
 {
     mPlannedTasks = tasks.getPlannedTasks();
+
+    updatePlannedTask();
 }
 
 void DialogTaskEdit::setHoursPreset()
