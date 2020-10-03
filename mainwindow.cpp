@@ -99,6 +99,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //// Setup table ===========================================================
 
+    ui->table->setColumnHidden(COL_PLAN, true);
+
     ui->table->header()->setStretchLastSection(false);
 
     ui->table->header()->setSectionResizeMode(COL_HOURS_SPENT, QHeaderView::ResizeToContents);

@@ -101,6 +101,11 @@
         <string>Результат</string>
        </property>
       </column>
+      <column>
+       <property name="text">
+        <string>План</string>
+       </property>
+      </column>
      </widget>
     </item>
     <item>
@@ -348,7 +353,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>33</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAfqk">
