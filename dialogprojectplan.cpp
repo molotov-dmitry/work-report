@@ -627,40 +627,6 @@ void DialogProjectPlan::loadMonthReport()
 
     }
 
-    //// Add unsorted tasks ====================================================
-
-    {
-        DialogTaskEdit dialog;
-
-        //// Create unsorted category ------------------------------------------
-
-        dialog.setTaskType(TASK_ACTION);
-        dialog.setTaskActionType(ACTION_OTHER);
-        dialog.setTaskProject(QString());
-        dialog.setTaskProduct(QString());
-        dialog.setTaskDescription(QString::fromUtf8("Нераспределённые"));
-
-        //// Create item -------------------------------------------------------
-
-        QTreeWidgetItem* item = new QTreeWidgetItem;
-
-        setItem(*item, dialog, true);
-        item->setData(COL_HOURS_SPENT, Qt::UserRole, 0);
-        item->setText(COL_HOURS_SPENT, "0");
-        item->setData(0, Qt::UserRole + 2, true);
-
-        ui->tableMonthReport->addTopLevelItem(item);
-
-        //// Set bold font -----------------------------------------------------
-
-        QFont fontBold = ui->tableMonthReport->font();
-        fontBold.setBold(true);
-        for (int i = 0; i < ui->tableMonthReport->columnCount(); ++i)
-        {
-            item->setFont(i, fontBold);
-        }
-    }
-
     //// Load tasks ============================================================
 
     loadMonthTasks();
@@ -754,7 +720,7 @@ void DialogProjectPlan::loadMonthTasks()
             //// Match with planned task ---------------------------------------
 
             int count = ui->tableMonthReport->topLevelItemCount();
-            QTreeWidgetItem* rootItem = ui->tableMonthReport->topLevelItem(count - 1);
+            QTreeWidgetItem* rootItem = nullptr; //ui->tableMonthReport->topLevelItem(count - 1);
 
             for (int i = 0; i < count - 1; ++i)
             {
@@ -775,7 +741,33 @@ void DialogProjectPlan::loadMonthTasks()
                     continue;
                 }
 
+                if (report.plan != check->text(COL_R_DESCRIPTION))
+                {
+                    continue;
+                }
+
                 rootItem = check;
+            }
+
+            //// Create new unplanned task if not matched ======================
+
+            if (rootItem == nullptr)
+            {
+                rootItem = new QTreeWidgetItem(*item);
+
+                rootItem->setData(COL_R_HOURS_PLANNED, Qt::UserRole, 0);
+                rootItem->setText(COL_R_HOURS_PLANNED, "-");
+
+                rootItem->setText(COL_R_DESCRIPTION, report.plan);
+
+                QFont fontBold = ui->tableMonthReport->font();
+                fontBold.setBold(true);
+                for (int i = 1; i < ui->tableMonthReport->columnCount(); ++i)
+                {
+                    rootItem->setFont(i, fontBold);
+                }
+
+                ui->tableMonthReport->addTopLevelItem(rootItem);
             }
 
             //// Add item ------------------------------------------------------
@@ -794,6 +786,9 @@ void DialogProjectPlan::loadMonthTasks()
 
 void DialogProjectPlan::updateMonthReportHours()
 {
+    const QColor colorMatched   = QColor(56, 142, 60);
+    const QColor colorUnmatched = QColor(183, 28, 28);
+
     int hoursPlanned = 0;
     int hoursSpent = 0;
 
@@ -819,6 +814,15 @@ void DialogProjectPlan::updateMonthReportHours()
         rootItem->setData(COL_R_HOURS_SPENT, Qt::UserRole, hoursSpentPlan);
         rootItem->setText(COL_R_HOURS_SPENT, QString::number(hoursSpentPlan));
 
+        if (hoursSpentPlan >= rootItem->data(COL_R_HOURS_PLANNED, Qt::UserRole).toInt())
+        {
+            rootItem->setTextColor(COL_R_HOURS_SPENT, colorMatched);
+        }
+        else
+        {
+            rootItem->setTextColor(COL_R_HOURS_SPENT, colorUnmatched);
+        }
+
         hoursSpent += hoursSpentPlan;
     }
 
@@ -828,11 +832,11 @@ void DialogProjectPlan::updateMonthReportHours()
 
     if (hoursSpent == hoursPlanned)
     {
-        labelPalette.setColor(QPalette::WindowText, QColor(56, 142, 60));
+        labelPalette.setColor(QPalette::WindowText, colorMatched);
     }
     else
     {
-        labelPalette.setColor(QPalette::WindowText, QColor(183, 28, 28));
+        labelPalette.setColor(QPalette::WindowText, colorUnmatched);
     }
 
     ui->labelReportHours->setPalette(labelPalette);
