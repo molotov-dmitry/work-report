@@ -30,8 +30,8 @@ RCC_DIR     = build/rc
 RC_ICONS = res/icons/clock.ico
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
+    main.cpp \
+    mainwindow.cpp \
     dialogtaskedit.cpp \
     plannedtasks.cpp \
     settings.cpp \
@@ -41,12 +41,13 @@ SOURCES += \
     dialogprojecttemplatesedit.cpp \
     values.cpp \
     common/reportentry.cpp \
+    common/reportexportcsv.cpp \
     common/reportimport.cpp \
     dialogprojectplan.cpp \
     monthdaysselectwidget.cpp
 
 HEADERS += \
-        mainwindow.h \
+    mainwindow.h \
     dialogtaskedit.h \
     plannedtasks.h \
     settings.h \
@@ -56,12 +57,13 @@ HEADERS += \
     dialogprojecttemplatesedit.h \
     values.h \
     common/reportentry.h \
+    common/reportexportcsv.h \
     common/reportimport.h \
     dialogprojectplan.h \
     monthdaysselectwidget.h
 
 FORMS += \
-        mainwindow.ui \
+    mainwindow.ui \
     dialogtaskedit.ui \
     dialogsettingsedit.ui \
     dialogprojecttemplatesedit.ui \

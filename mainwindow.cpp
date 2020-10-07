@@ -29,6 +29,7 @@
 #include "values.h"
 #include "common/reportentry.h"
 #include "common/reportimport.h"
+#include "common/reportexportcsv.h"
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -346,28 +347,6 @@ void MainWindow::setItem(QTreeWidgetItem &item, const DialogTaskEdit &dialog)
 QString MainWindow::getDateRangeString() const
 {
     return ui->dateFrom->date().toString("dd.MM.yyyy") + " - " + ui->dateTo->date().toString("dd.MM.yyyy");
-}
-
-QString MainWindow::toCsvValue(QString text)
-{
-    bool quoteString = text.contains(';') || text.contains('"') || text.contains(",");
-
-    text.replace('"', "\"\"");
-    text.replace("\n", "\r");
-
-    if (quoteString)
-    {
-        text.append('"');
-        text.prepend('"');
-    }
-
-    return text;
-
-}
-
-QString MainWindow::toCsvValue(const char *utf8ConstString)
-{
-    return toCsvValue(QString::fromUtf8(utf8ConstString));
 }
 
 void MainWindow::updateExportStatus()
@@ -915,14 +894,14 @@ void MainWindow::exportData()
 
     const int count = ui->table->topLevelItemCount();
 
-    reportString << toCsvValue("ФИО");
+    reportString << ReportExportCsv::toCsvValue("ФИО");
     reportString << ';';
-    reportString << toCsvValue("Временной период");
+    reportString << ReportExportCsv::toCsvValue("Временной период");
     reportString << ';';
 
     for (int j = 0; j < COLUMN_COUNT; ++j)
     {
-        reportString << toCsvValue(ui->table->headerItem()->text(j));
+        reportString << ReportExportCsv::toCsvValue(ui->table->headerItem()->text(j));
 
         if (j < COLUMN_COUNT - 1)
         {
@@ -938,14 +917,14 @@ void MainWindow::exportData()
     {
         const QTreeWidgetItem* item = ui->table->topLevelItem(i);
 
-        reportString << toCsvValue(mSettings.getUserName());
+        reportString << ReportExportCsv::toCsvValue(mSettings.getUserName());
         reportString << ';';
-        reportString << toCsvValue(getDateRangeString());
+        reportString << ReportExportCsv::toCsvValue(getDateRangeString());
         reportString << ';';
 
         for (int j = 0; j < COLUMN_COUNT; ++j)
         {
-            reportString << toCsvValue(item->text(j));
+            reportString << ReportExportCsv::toCsvValue(item->text(j));
 
             if (j < COLUMN_COUNT - 1)
             {
