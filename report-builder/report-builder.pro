@@ -17,13 +17,15 @@ SOURCES += ../values.cpp \
     reportbuilderstatistics.cpp \
     reportbuildertotalbydate.cpp \
     reportbuildertotalreduced.cpp \
-    ../common/reportentry.cpp
+    ../common/reportentry.cpp \
+    ../common/reportimport.cpp
 
 HEADERS += ../values.h \
     reportbuilderstatistics.h \
     reportbuildertotalbydate.h \
     reportbuildertotalreduced.h \
-    ../common/reportentry.h
+    ../common/reportentry.h \
+    ../common/reportimport.h
 
 unix: target.path = /usr/local/bin
 !isEmpty(target.path): INSTALLS += target
