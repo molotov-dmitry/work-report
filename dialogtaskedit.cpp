@@ -250,10 +250,14 @@ void DialogTaskEdit::on_editProject_currentTextChanged(const QString &arg1)
 
 void DialogTaskEdit::on_editProduct_currentTextChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1)
+
     updatePlannedTask();
 }
 
 void DialogTaskEdit::on_boxAction_currentIndexChanged(int index)
 {
+    Q_UNUSED(index)
+
     updatePlannedTask();
 }
