@@ -18,6 +18,7 @@ SOURCES += ../values.cpp \
     reportbuildertotalbydate.cpp \
     reportbuildertotalreduced.cpp \
     ../common/reportentry.cpp \
+    ../common/reportexportcsv.cpp \
     ../common/reportimport.cpp
 
 HEADERS += ../values.h \
@@ -25,6 +26,7 @@ HEADERS += ../values.h \
     reportbuildertotalbydate.h \
     reportbuildertotalreduced.h \
     ../common/reportentry.h \
+    ../common/reportexportcsv.h \
     ../common/reportimport.h
 
 unix: target.path = /usr/local/bin

@@ -1,21 +1,5 @@
 ﻿#include "reportbuildertotalreduced.h"
-
-static QString toCsvValue(QString text)
-{
-    bool quoteString = text.contains(';') || text.contains('"') || text.contains(",");
-
-    text.replace('"', "\"\"");
-    text.replace("\n", "\r");
-
-    if (quoteString)
-    {
-        text.append('"');
-        text.prepend('"');
-    }
-
-    return text;
-
-}
+#include "common/reportexportcsv.h"
 
 void BuildReportReduced(const QList<ReportEntry> &list, QTextStream &stream)
 {
@@ -62,11 +46,11 @@ void BuildReportReduced(const QList<ReportEntry> &list, QTextStream &stream)
                 {
                     int hours = map.value(worker).value(project).value(product).value(action);
 
-                    stream << toCsvValue(worker) << ";";
+                    stream << ReportExportCsv::toCsvValue(worker) << ";";
                     stream << hours << ";";
-                    stream << toCsvValue(project) << ";";
-                    stream << toCsvValue(product) << ";";
-                    stream << toCsvValue(action);
+                    stream << ReportExportCsv::toCsvValue(project) << ";";
+                    stream << ReportExportCsv::toCsvValue(product) << ";";
+                    stream << ReportExportCsv::toCsvValue(action);
 
                     stream << endl;
                 }
