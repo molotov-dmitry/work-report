@@ -230,7 +230,7 @@ void PlannedTasks::load(const QDate& date)
 
                 //// Get type --------------------------------------------------
 
-                int typeValue;
+                int typeValue = 0;
                 QByteArray typeStr = object["type"].toString().toUtf8();
 
                 for (int i = 0; i < TASK_COUNT; ++i)
