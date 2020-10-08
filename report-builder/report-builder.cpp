@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     QFile fileReportTotal(reportDirectory.absoluteFilePath("total.csv"));
     if (not fileReportTotal.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qCritical() << "Failed to open total.csv fro write";
+        qCritical() << "Failed to open total.csv for write";
         return 1;
     }
 
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     QFile fileReportReduced(reportDirectory.absoluteFilePath("reduced.csv"));
     if (not fileReportReduced.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qCritical() << "Failed to open total.csv fro write";
+        qCritical() << "Failed to open total.csv for write";
         return 1;
     }
 
