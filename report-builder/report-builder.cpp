@@ -84,6 +84,20 @@ int main(int argc, char *argv[])
 
     BuildReportTotalBydate(entries, streamTotalByDate);
 
+    //// Build total by date ===================================================
+
+    QFile fileReportCompact(reportDirectory.absoluteFilePath("compact.csv"));
+    if (not fileReportCompact.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qCritical() << "Failed to open compact.csv for write";
+        return 1;
+    }
+
+    QTextStream streamCompactByDate(&fileReportCompact);
+    streamTotalByDate.setGenerateByteOrderMark(true);
+
+    BuildReportTotalBydate(squashReportList(entries), streamCompactByDate);
+
     //// Build reduced =========================================================
 
     QFile fileReportReduced(reportDirectory.absoluteFilePath("reduced.csv"));
