@@ -688,7 +688,7 @@ void DialogProjectPlan::loadMonthTasks()
         {
             QTreeWidgetItem* item = new QTreeWidgetItem;
 
-            //// Finn report data ----------------------------------------------
+            //// Fill report data ----------------------------------------------
 
             item->setIcon(COL_R_TYPE, QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
 
