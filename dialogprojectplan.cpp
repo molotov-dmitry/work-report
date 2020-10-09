@@ -727,7 +727,7 @@ void DialogProjectPlan::loadMonthTasks()
             int count = ui->tableMonthReport->topLevelItemCount();
             QTreeWidgetItem* rootItem = nullptr; //ui->tableMonthReport->topLevelItem(count - 1);
 
-            for (int i = 0; i < count - 1; ++i)
+            for (int i = 0; i < count; ++i)
             {
                 QTreeWidgetItem* check = ui->tableMonthReport->topLevelItem(i);
 
