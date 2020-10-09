@@ -784,6 +784,9 @@ void DialogProjectPlan::loadMonthTasks()
         }
     }
 
+    ui->tableMonthReport->expandAll();
+    ui->tableMonthReport->header()->resizeSections(QHeaderView::ResizeToContents);
+
     //// Update hours ==========================================================
 
     updateMonthReportHours();
