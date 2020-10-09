@@ -132,7 +132,7 @@ void PlannedTasks::load(const QDate& date)
         }
 
         QStringList filters;
-        filters << "*.csv";
+        filters << "Отчет ??.??.???? - ??.??.????.csv";
 
         foreach (const QFileInfo& d, dirMonth.entryInfoList(filters, QDir::Files))
         {

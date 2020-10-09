@@ -9,6 +9,10 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QUuid>
+#include <QTextStream>
+#include <QUrlQuery>
+#include <QDesktopServices>
+#include <QProcess>
 
 #include "values.h"
 #include "projecttemplates.h"
@@ -16,6 +20,7 @@
 #include "dialogtaskedit.h"
 
 #include "common/reportimport.h"
+#include "common/reportexportcsv.h"
 
 enum Column
 {
@@ -658,7 +663,7 @@ void DialogProjectPlan::loadMonthTasks()
     }
 
     QStringList filters;
-    filters << "*.csv";
+    filters << "Отчет ??.??.???? - ??.??.????.csv";
 
     //// Load entries ==========================================================
 
@@ -1162,6 +1167,19 @@ void DialogProjectPlan::setItem(QTreeWidgetItem& item, const DialogTaskEdit& dia
     }
 }
 
+QDate DialogProjectPlan::getSelectedDate() const
+{
+    return QDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+}
+
+QString DialogProjectPlan::getDateRangeString() const
+{
+    QDate dateFrom(getSelectedDate());
+    QDate dateTo = dateFrom.addMonths(1).addDays(-1);
+
+    return dateFrom.toString("dd.MM.yyyy") + " - " + dateTo.toString("dd.MM.yyyy");
+}
+
 void DialogProjectPlan::on_buttonMoveBack_clicked()
 {
     moveInTime(-1);
@@ -1188,4 +1206,186 @@ void DialogProjectPlan::on_buttonGoToday_clicked()
 
     ui->editYear->setValue(date.year());
     ui->boxMonths->setCurrentIndex(date.month() - 1);
+}
+
+void DialogProjectPlan::on_buttonExport_clicked()
+{
+    //// Get task file paths ===================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        taskDir.mkpath(mSettings.getWorkPath());
+
+        if (not taskDir.cd(mSettings.getWorkPath()))
+        {
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для отчетов"));
+            return;
+        }
+    }
+
+    QDate monthDate(getSelectedDate());
+
+    QString monthDir = monthDate.toString("yyyy-MM");
+
+    if (not taskDir.cd(monthDir))
+    {
+        taskDir.mkdir(monthDir);
+
+        if (not taskDir.cd(monthDir))
+        {
+            QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать директорию для отчетов"));
+            return;
+        }
+    }
+
+    QLocale locale;
+
+    QString fileName = QString::fromUtf8("План ") + monthDir + ".csv";
+
+    QString reportPath(taskDir.absoluteFilePath(fileName));
+    QString reportPathBak(taskDir.absoluteFilePath(fileName + ".bak"));
+
+    QFile::remove(reportPathBak);
+    QFile::rename(reportPath, reportPathBak);
+
+    //// Open report file ======================================================
+
+    QFile reportFile(reportPath);
+
+    if (not reportFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно создать файл отчета"));
+        return;
+    }
+
+    //// Generate CSV ==========================================================
+
+    QTextStream reportString(&reportFile);
+    reportString.setCodec("UTF-8");
+    reportString.setGenerateByteOrderMark(true);
+
+    const int count = ui->tablePlan->topLevelItemCount();
+
+    reportString << ReportExportCsv::toCsvValue("ФИО");
+    reportString << ';';
+    reportString << ReportExportCsv::toCsvValue("Временной период");
+    reportString << ';';
+
+    for (int j = 0; j < COLUMN_COUNT; ++j)
+    {
+        reportString << ReportExportCsv::toCsvValue(ui->tablePlan->headerItem()->text(j));
+
+        if (j < COLUMN_COUNT - 1)
+        {
+            reportString << ';';
+        }
+        else
+        {
+            reportString << '\n';
+        }
+    }
+
+    for (int i = 0; i < count; ++i)
+    {
+        const QTreeWidgetItem* item = ui->tablePlan->topLevelItem(i);
+
+        reportString << ReportExportCsv::toCsvValue(mSettings.getUserName());
+        reportString << ';';
+        reportString << ReportExportCsv::toCsvValue(getDateRangeString());
+        reportString << ';';
+
+        for (int j = 0; j < COLUMN_COUNT; ++j)
+        {
+            reportString << ReportExportCsv::toCsvValue(item->text(j));
+
+            if (j < COLUMN_COUNT - 1)
+            {
+                reportString << ';';
+            }
+            else
+            {
+                reportString << '\n';
+            }
+        }
+    }
+
+    //// Close report file =====================================================
+
+    reportFile.close();
+
+    //// Remove backup file ====================================================
+
+    QFile::remove(reportPathBak);
+
+    //// =======================================================================
+}
+
+void DialogProjectPlan::on_buttonSend_clicked()
+{
+    on_buttonExport_clicked();
+
+    //// Get report file name ==================================================
+
+    QDir taskDir;
+
+    if (not taskDir.cd(mSettings.getWorkPath()))
+    {
+        QMessageBox::critical(this, QString::fromUtf8("Отправка"), QString::fromUtf8("Невозможно открыть директорию для отчетов"));
+        return;
+    }
+
+    QString monthDir = getSelectedDate().toString("yyyy-MM");
+
+    if (not taskDir.cd(monthDir))
+    {
+        QMessageBox::critical(this, QString::fromUtf8("Сохранение"), QString::fromUtf8("Невозможно открыть директорию для отчетов"));
+        return;
+    }
+
+    QString fileName = QString::fromUtf8("План ") + monthDir + ".csv";
+    QString filePath = taskDir.absoluteFilePath(fileName);
+
+    //// Check e-mail is set ===================================================
+
+    if (mSettings.getMailTo().isEmpty())
+    {
+        QMessageBox::warning(this, QString::fromUtf8("Отправка"), QString::fromUtf8("Не указан e-mail руководителя"));
+        return;
+    }
+
+    //// Get program and arguments =============================================
+
+#ifdef Q_OS_LINUX
+
+    QUrlQuery query;
+    query.addQueryItem("subject", "Отчет за месяц");
+    query.addQueryItem("attach", filePath);
+
+    QUrl url("mailto:" + mSettings.getMailTo());
+    url.setQuery(query);
+
+    QDesktopServices::openUrl(url);
+
+#endif
+#ifdef Q_OS_WIN
+
+    if (mSettings.getOutlookPath().isEmpty())
+    {
+        QMessageBox::warning(this, QString::fromUtf8("Отправка"), QString::fromUtf8("Не указан путь к программе Outlook"));
+        return;
+    }
+
+    QString program;
+    QStringList arguments;
+
+    program = mSettings.getOutlookPath();
+    arguments << "/c" << "ipm.note" << "/m" << mSettings.getMailTo() +"&subject=Отчет за месяц" << "/a" << filePath;
+
+    QProcess outlook;
+
+    outlook.startDetached(program, arguments);
+
+#endif
 }

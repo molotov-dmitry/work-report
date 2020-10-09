@@ -354,6 +354,32 @@
           </spacer>
          </item>
          <item>
+          <widget class="QToolButton" name="buttonExport">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Экспорт</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="buttonSend">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>32</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Отправить</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="Line" name="line_2">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -400,19 +426,6 @@
         </size>
        </property>
       </spacer>
-     </item>
-     <item>
-      <widget class="QToolButton" name="buttonExport">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Экспорт</string>
-       </property>
-      </widget>
      </item>
      <item>
       <widget class="QToolButton" name="buttonClose">

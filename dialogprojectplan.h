@@ -51,6 +51,10 @@ private slots:
 
     void on_buttonGoToday_clicked();
 
+    void on_buttonExport_clicked();
+
+    void on_buttonSend_clicked();
+
 private:
     Ui::DialogProjectPlan *ui;
 
@@ -58,6 +62,9 @@ private:
     const Settings&         mSettings;
 
     void setItem(QTreeWidgetItem& item, const DialogTaskEdit& dialog, bool isReport = false);
+
+    QDate   getSelectedDate() const;
+    QString getDateRangeString() const;
 };
 
 #endif // DIALOGPROJECTPLAN_H
