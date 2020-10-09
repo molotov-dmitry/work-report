@@ -1169,7 +1169,7 @@ void DialogProjectPlan::setItem(QTreeWidgetItem& item, const DialogTaskEdit& dia
 
 QDate DialogProjectPlan::getSelectedDate() const
 {
-    return QDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1);
+    return QDate(ui->editYear->value(), ui->boxMonths->currentIndex() + 1, 1).addMonths(1);
 }
 
 QString DialogProjectPlan::getDateRangeString() const
