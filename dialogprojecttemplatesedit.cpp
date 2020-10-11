@@ -3,6 +3,8 @@
 
 #include <QTreeWidgetItem>
 #include <QFontDatabase>
+#include <QUrl>
+#include <QDesktopServices>
 
 DialogProjectTemplatesEdit::DialogProjectTemplatesEdit(QWidget *parent) :
     QDialog(parent),
@@ -290,4 +292,16 @@ void DialogProjectTemplatesEdit::on_buttonSwitchMode_clicked()
             ui->table->expandItem(currentProject);
         }
     }
+}
+
+void DialogProjectTemplatesEdit::on_buttonGitLab_clicked()
+{
+    if (ui->stackedWidget->currentIndex() == 0)
+    {
+        on_buttonSwitchMode_clicked();
+    }
+
+    QUrl url("https://git.rczifort.local/d.sorokin/work-report-templates");
+
+    QDesktopServices::openUrl(url);
 }

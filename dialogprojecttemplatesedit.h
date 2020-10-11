@@ -39,6 +39,8 @@ private slots:
 
     void on_buttonSwitchMode_clicked();
 
+    void on_buttonGitLab_clicked();
+
 private:
     Ui::DialogProjectTemplatesEdit *ui;
 

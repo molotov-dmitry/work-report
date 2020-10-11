@@ -37,6 +37,22 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="buttonGitLab">
+       <property name="toolTip">
+        <string>Шаблоны для всех проектов на GitLab</string>
+       </property>
+       <property name="text">
+        <string>GitLab</string>
+       </property>
+       <property name="icon">
+        <iconset theme="gitlab"/>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="minimumSize">
         <size>
