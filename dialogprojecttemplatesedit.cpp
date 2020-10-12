@@ -301,7 +301,7 @@ void DialogProjectTemplatesEdit::on_buttonGitLab_clicked()
         on_buttonSwitchMode_clicked();
     }
 
-    QUrl url("https://git.rczifort.local/d.sorokin/work-report-templates");
+    QUrl url("https://git.rczifort.local/documents/project-templates/blob/master/README.md");
 
     QDesktopServices::openUrl(url);
 }
