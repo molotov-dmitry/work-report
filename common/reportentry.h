@@ -23,6 +23,8 @@ struct ReportEntry
     TaskResult      result;
 
     QString         plan;
+
+    ReportEntry() : type(TASK_COUNT), hours(0), action(ACTION_COUNT), result(RESULT_COUNT) {}
 };
 
 bool compareReportEntries(const ReportEntry& re1, const ReportEntry& re2);
