@@ -1146,6 +1146,8 @@ void MainWindow::on_actionImport_triggered()
 
             item->setData(COL_RESULT, Qt::UserRole, report.result);
             item->setText(COL_RESULT, QString::fromUtf8(gValuesResults[report.result].displayValue));
+
+            item->setText(COL_PLAN, report.plan);
         }
         else
         {
