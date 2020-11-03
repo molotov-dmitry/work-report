@@ -14,6 +14,10 @@
 #include <QDesktopServices>
 #include <QProcess>
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+
 #include "values.h"
 #include "projecttemplates.h"
 #include "settings.h"
