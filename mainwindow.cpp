@@ -83,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->buttonSettings->setIcon(QIcon::fromTheme("preferences-system-symbolic", QIcon(":/icons/settings.svg")));
     ui->buttonTemplates->setIcon(QIcon::fromTheme("folder-templates-symbolic", QIcon(":/icons/template.svg")));
+    ui->buttonPlan->setIcon(QIcon::fromTheme("stock_todo", QIcon(":/icons/todo.svg")));
 
     ui->buttonOpenReportDir->setIcon(QIcon::fromTheme("folder", QIcon(":/icons/folder.svg")));
 

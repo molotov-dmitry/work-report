@@ -19,5 +19,6 @@
         <file>icons/gitlab.svg</file>
         <file>icons/move-left.svg</file>
         <file>icons/move-right.svg</file>
+        <file>icons/todo.svg</file>
     </qresource>
 </RCC>
