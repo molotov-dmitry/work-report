@@ -203,7 +203,14 @@ void DialogTaskEdit::updatePlannedTask()
     bool actionSet = false;
     QString newText;
 
-    foreach(const PlannedTask& task, mPlannedTasks.value(key))
+    QList<PlannedTask> plannedTasks = mPlannedTasks.value(key);
+    if (not ui->editProduct->currentText().isEmpty())
+    {
+        QPair<QString, QString> keyEmpty(ui->editProject->currentText(), QString());
+        plannedTasks.append(mPlannedTasks.value(keyEmpty));
+    }
+
+    foreach(const PlannedTask& task, plannedTasks)
     {
         ui->editPlan->addItem(task.description);
 
