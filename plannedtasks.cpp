@@ -99,6 +99,7 @@ void PlannedTasks::load(const QDate& date)
             if (QByteArray(gValuesActionTypes[i].jsonValue) == actionStr)
             {
                 task.action = i;
+                break;
             }
         }
 
