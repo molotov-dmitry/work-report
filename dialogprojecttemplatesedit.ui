@@ -38,6 +38,12 @@
      </item>
      <item>
       <widget class="QToolButton" name="buttonGitLab">
+       <property name="minimumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>Шаблоны для всех проектов на GitLab</string>
        </property>

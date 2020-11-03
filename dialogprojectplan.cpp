@@ -63,6 +63,21 @@ DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
     ui->tablePlan->header()->setSectionResizeMode(COL_HOURS_SPENT, QHeaderView::ResizeToContents);
     ui->tablePlan->header()->setSectionResizeMode(COL_DESCRIPTION, QHeaderView::Stretch);
 
+    //// Icons =================================================================
+
+    this->setWindowIcon(QIcon::fromTheme("time-admin", QIcon(":/icons/clock.svg")));
+
+    ui->buttonMoveBack->setIcon(QIcon::fromTheme("go-left", QIcon(":/icons/move-left.svg")));
+    ui->buttonMoveForward->setIcon(QIcon::fromTheme("go-right", QIcon(":/icons/move-right.svg")));
+    ui->buttonGoToday->setIcon(QIcon::fromTheme("calendar-go-today", QIcon(":/icons/calendar-go-today.svg")));
+
+    ui->buttonAddPlan->setIcon(QIcon::fromTheme("list-add-symbolic", QIcon(":/icons/add.svg")));
+    ui->buttonEditPlan->setIcon(QIcon::fromTheme("document-edit-symbolic", QIcon(":/icons/edit.svg")));
+    ui->buttonRemovePlan->setIcon(QIcon::fromTheme("edit-delete-symbolic", QIcon(":/icons/delete.svg")));
+
+    ui->buttonExport->setIcon(QIcon::fromTheme("spreadsheet", QIcon(":/icons/table.svg")));
+    ui->buttonSend->setIcon(QIcon::fromTheme("mail-send", QIcon(":/icons/email.svg")));
+
     //// Add months box ========================================================
 
     QLocale locale;

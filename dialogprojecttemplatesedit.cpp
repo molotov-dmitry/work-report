@@ -23,6 +23,8 @@ DialogProjectTemplatesEdit::DialogProjectTemplatesEdit(QWidget *parent) :
 
     ui->buttonSwitchMode->setIcon(QIcon::fromTheme("text", QIcon(":/icons/text.svg")));
 
+    ui->buttonGitLab->setIcon(QIcon::fromTheme("gitlab", QIcon(":/icons/gitlab.svg")));
+
     ui->editTemplates->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
 }
 

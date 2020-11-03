@@ -45,7 +45,7 @@
         <string>&lt;</string>
        </property>
        <property name="icon">
-        <iconset theme="back">
+        <iconset theme="go-left">
          <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
@@ -62,7 +62,7 @@
         <string>&gt;</string>
        </property>
        <property name="icon">
-        <iconset theme="forward">
+        <iconset theme="go-right">
          <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>
@@ -364,6 +364,12 @@
            <property name="text">
             <string>Экспорт</string>
            </property>
+           <property name="icon">
+            <iconset theme="spreadsheet"/>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
+           </property>
           </widget>
          </item>
          <item>
@@ -376,6 +382,12 @@
            </property>
            <property name="text">
             <string>Отправить</string>
+           </property>
+           <property name="icon">
+            <iconset theme="mail-send"/>
+           </property>
+           <property name="toolButtonStyle">
+            <enum>Qt::ToolButtonTextBesideIcon</enum>
            </property>
           </widget>
          </item>

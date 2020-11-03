@@ -15,5 +15,9 @@
         <file>icons/folder.svg</file>
         <file>icons/template.svg</file>
         <file>icons/clock.svg</file>
+        <file>icons/calendar-go-today.svg</file>
+        <file>icons/gitlab.svg</file>
+        <file>icons/move-left.svg</file>
+        <file>icons/move-right.svg</file>
     </qresource>
 </RCC>
