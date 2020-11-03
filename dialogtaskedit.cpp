@@ -212,6 +212,11 @@ void DialogTaskEdit::updatePlannedTask()
 
     foreach(const PlannedTask& task, plannedTasks)
     {
+        if (ui->editPlan->findText(task.description) >= 0)
+        {
+            continue;
+        }
+
         ui->editPlan->addItem(task.description);
 
         if (text.isEmpty() && not actionSet)
