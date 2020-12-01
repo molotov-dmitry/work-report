@@ -16,6 +16,7 @@ SOURCES += ../values.cpp \
     report-builder.cpp \
     reportbuilderstatistics.cpp \
     reportbuildertotalbydate.cpp \
+    reportbuildertotalplanned.cpp \
     reportbuildertotalreduced.cpp \
     ../common/reportentry.cpp \
     ../common/reportexportcsv.cpp \
@@ -24,6 +25,7 @@ SOURCES += ../values.cpp \
 HEADERS += ../values.h \
     reportbuilderstatistics.h \
     reportbuildertotalbydate.h \
+    reportbuildertotalplanned.h \
     reportbuildertotalreduced.h \
     ../common/reportentry.h \
     ../common/reportexportcsv.h \

@@ -10,6 +10,7 @@
 #include "reportbuilderstatistics.h"
 #include "reportbuildertotalbydate.h"
 #include "reportbuildertotalreduced.h"
+#include "reportbuildertotalplanned.h"
 
 int main(int argc, char *argv[])
 {
@@ -111,6 +112,20 @@ int main(int argc, char *argv[])
     streamReduced.setGenerateByteOrderMark(true);
 
     BuildReportReduced(entries, streamReduced);
+
+    //// Build planned =========================================================
+
+    QFile fileReportPlanned(reportDirectory.absoluteFilePath("planned.csv"));
+    if (not fileReportPlanned.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qCritical() << "Failed to open total.csv for write";
+        return 1;
+    }
+
+    QTextStream streamPlanned(&fileReportPlanned);
+    streamPlanned.setGenerateByteOrderMark(true);
+
+    BuildReportPlanned(entries, streamPlanned);
 
     //// =======================================================================
 
