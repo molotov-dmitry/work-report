@@ -750,17 +750,7 @@ void DialogProjectPlan::loadMonthTasks()
             {
                 QTreeWidgetItem* check = ui->tableMonthReport->topLevelItem(i);
 
-                if (item->text(COL_R_ACTION) != check->text(COL_R_ACTION))
-                {
-                    continue;
-                }
-
                 if (item->text(COL_R_PROJECT) != check->text(COL_R_PROJECT))
-                {
-                    continue;
-                }
-
-                if (item->text(COL_R_PRODUCT) != check->text(COL_R_PRODUCT))
                 {
                     continue;
                 }
