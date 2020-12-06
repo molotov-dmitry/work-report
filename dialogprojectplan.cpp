@@ -99,6 +99,15 @@ DialogProjectPlan::DialogProjectPlan(const ProjectTemplates& projectTemplates,
 
     QDate date = QDate::currentDate();
 
+    if (date.day() <= 4)
+    {
+        date = date.addMonths(-1);
+    }
+    else if (date.day() < 25)
+    {
+        ui->tabWidget->setCurrentIndex(0);
+    }
+
     ui->boxMonths->setCurrentIndex(date.month() - 1);
     ui->editYear->setValue(date.year());
 
