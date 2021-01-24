@@ -7,12 +7,12 @@
 #include "values.h"
 #include "reportentry.h"
 
-ReportImport::ReportImport()
+ReportImport::ReportImport() : mLastErrorLine(-1)
 {
 
 }
 
-bool ReportImport::readReport(const QString &reportPath, QList<ReportEntry> &entries)
+bool ReportImport::readReport(const QString &reportPath, QList<ReportEntry> &entries, bool plan)
 {
     mLastError.clear();
     mLastErrorLine = -1;
@@ -54,7 +54,7 @@ bool ReportImport::readReport(const QString &reportPath, QList<ReportEntry> &ent
 
         ReportEntry entry;
 
-        if (not toReportEntry(lines, entry))
+        if (not toReportEntry(lines, entry, plan))
         {
             mLastErrorLine = lineNumber;
 
@@ -95,7 +95,7 @@ uint ReportImport::findId(const QString &value, const Values *values, uint count
     return count;
 }
 
-bool ReportImport::toReportEntry(const QStringList &line, ReportEntry &entry)
+bool ReportImport::toReportEntry(const QStringList &line, ReportEntry &entry, bool plan)
 {
     enum Columns
     {
@@ -113,7 +113,8 @@ bool ReportImport::toReportEntry(const QStringList &line, ReportEntry &entry)
         COL_COUNT
     };
 
-    if (line.size() != COL_COUNT && line.size() != COL_COUNT - 1)
+    if ((not plan && (line.size() != COL_COUNT && line.size() != COL_COUNT - 1)) ||
+        (plan && line.size() != COL_COUNT - 2))
     {
         mLastError = QString::asprintf("Wrong column count: %d", line.size());
         return false;
@@ -185,12 +186,19 @@ bool ReportImport::toReportEntry(const QStringList &line, ReportEntry &entry)
 
         //// Result ------------------------------------------------------------
 
-        entry.result = (TaskResult)findId(line.at(COL_RESULT), gValuesResults, RESULT_COUNT);
-
-        if (entry.result == RESULT_COUNT)
+        if (not plan)
         {
-            mLastError = "Wrong result value: " + line.at(COL_RESULT);
-            return false;
+            entry.result = (TaskResult)findId(line.at(COL_RESULT), gValuesResults, RESULT_COUNT);
+
+            if (entry.result == RESULT_COUNT)
+            {
+                mLastError = "Wrong result value: " + line.at(COL_RESULT);
+                return false;
+            }
+        }
+        else
+        {
+            entry.result = RESULT_DELAYED;
         }
     }
 

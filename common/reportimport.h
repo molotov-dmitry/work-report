@@ -10,7 +10,7 @@ class ReportImport
 public:
     ReportImport();
 
-    bool readReport(const QString& reportPath, QList<ReportEntry>& entries);
+    bool readReport(const QString& reportPath, QList<ReportEntry>& entries, bool plan = false);
 
     QString lastError() const;
     int     lastErrorLine() const;
@@ -21,7 +21,7 @@ private:
     int     mLastErrorLine;
 
     uint findId(const QString& value, const Values* values, uint count);
-    bool toReportEntry(const QStringList& line, ReportEntry& entry);
+    bool toReportEntry(const QStringList& line, ReportEntry& entry, bool plan = false);
     bool splitReportLine(const QString& line, QStringList &lines);
 
 };
