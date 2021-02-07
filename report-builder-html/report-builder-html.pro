@@ -1,4 +1,4 @@
-QT       += core
+QT       += core xml
 
 TARGET   = report-builder-html
 TEMPLATE = app
@@ -25,3 +25,6 @@ HEADERS += ../values.h \
 
 unix: target.path = /usr/local/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    res/resources.qrc
