@@ -258,27 +258,29 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
                 {
                     Hours hours = mHoursStat.value(project).value(task).value(worker);
 
+                    stream.writeStartElement("td");
                     if (hours.planned != 0)
                     {
-                        stream.writeTextElement("td", QString::number(hours.planned));
+                        stream.writeCharacters(QString::number(hours.planned));
                     }
-                    else
-                    {
-                        stream.writeTextElement("td", QString());
-                    }
+                    stream.writeEndElement();
 
-                    if (hours.planned != 0 || hours.actual != 0)
+                    stream.writeStartElement("td");
+                    if ((hours.planned != 0 || hours.actual != 0) && not onlyPlan)
                     {
-                        stream.writeTextElement("td", QString::number(hours.actual));
+                        stream.writeCharacters(QString::number(hours.actual));
                     }
-                    else
-                    {
-                        stream.writeTextElement("td", QString());
-                    }
+                    stream.writeEndElement();
                 }
 
                 stream.writeTextElement("td", QString::number(mHourstTotalTask.value(project).value(task).planned));
-                stream.writeTextElement("td", QString::number(mHourstTotalTask.value(project).value(task).actual));
+
+                stream.writeStartElement("td");
+                if (not onlyPlan)
+                {
+                    stream.writeCharacters(QString::number(mHourstTotalTask.value(project).value(task).actual));
+                }
+                stream.writeEndElement();
 
                 if (firstTask)
                 {
@@ -289,7 +291,10 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
 
                     stream.writeStartElement("td");
                     stream.writeAttribute("rowspan", QString::number(tasks.count()));
-                    stream.writeCharacters(QString::number(mHourstTotalProject.value(project).actual));
+                    if (not onlyPlan)
+                    {
+                        stream.writeCharacters(QString::number(mHourstTotalProject.value(project).actual));
+                    }
                     stream.writeEndElement();
                 }
 
@@ -328,14 +333,26 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
     foreach (const QString& worker, workers)
     {
         stream.writeTextElement("td", QString::number(mHoursTotalWorker.value(worker).planned));
-        stream.writeTextElement("td", QString::number(mHoursTotalWorker.value(worker).actual));
+
+        stream.writeStartElement("td");
+        if (not onlyPlan)
+        {
+            stream.writeCharacters(QString::number(mHoursTotalWorker.value(worker).actual));
+        }
+        stream.writeEndElement();
     }
 
-    stream.writeTextElement("td", QString::number(mHoursTotalOverall.planned));
-    stream.writeTextElement("td", QString::number(mHoursTotalOverall.actual));
+    for (int i = 0; i < 2; ++i)
+    {
+        stream.writeTextElement("td", QString::number(mHoursTotalOverall.planned));
 
-    stream.writeTextElement("td", QString::number(mHoursTotalOverall.planned));
-    stream.writeTextElement("td", QString::number(mHoursTotalOverall.actual));
+        stream.writeStartElement("td");
+        if (not onlyPlan)
+        {
+            stream.writeCharacters(QString::number(mHoursTotalOverall.actual));
+        }
+        stream.writeEndElement();
+    }
 
     stream.writeEndElement();
 
@@ -508,7 +525,10 @@ int main(int argc, char *argv[])
 
     //// Write plan and report =================================================
 
-    buildReportHtml(reportDate, reportDirectory, false);
+    if (mHoursTotalOverall.actual > 0)
+    {
+        buildReportHtml(reportDate, reportDirectory, false);
+    }
     buildReportHtml(reportDate, reportDirectory, true);
 
     //// =======================================================================
