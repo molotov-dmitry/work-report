@@ -57,8 +57,8 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
     //// Write HTML ============================================================
 
     QLocale locale = QLocale::system();
-    QString title = "Данные о занятости сотрудников"
-                    "отдела разработки программного обеспечения"
+    QString title = "Данные о занятости сотрудников "
+                    "отдела разработки программного обеспечения "
                     "за " + locale.standaloneMonthName(date.month()) +
                     " " + QString::number(date.year()) + " г.";
 
