@@ -13,6 +13,8 @@ UI_DIR      = build/ui
 RCC_DIR     = build/rc
 
 SOURCES += ../values.cpp \
+    ../settings.cpp \
+    ../settingsdir.cpp \
     report-builder-html.cpp \
     ../common/reportentry.cpp \
     ../common/reportexportcsv.cpp \
@@ -21,7 +23,9 @@ SOURCES += ../values.cpp \
 HEADERS += ../values.h \
     ../common/reportentry.h \
     ../common/reportexportcsv.h \
-    ../common/reportimport.h
+    ../common/reportimport.h \
+    ../settings.h \
+    ../settingsdir.h
 
 unix: target.path = /usr/local/bin
 !isEmpty(target.path): INSTALLS += target

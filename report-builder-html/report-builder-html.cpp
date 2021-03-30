@@ -8,9 +8,14 @@
 #include <QMap>
 #include <QSet>
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+
 #include "values.h"
 #include "common/reportentry.h"
 #include "common/reportimport.h"
+#include "settings.h"
 
 struct Hours
 {
@@ -23,6 +28,13 @@ static QMap<QString, Hours> mHoursTotalWorker;
 static QMap<QString, Hours> mHourstTotalProject;
 static QMap<QString, QMap<QString, Hours> > mHourstTotalTask;
 static QMap<QString, QMap<QString, QMap<QString, Hours> > > mHoursStat;
+
+static QString sNameDepartment  = QString::fromUtf8("отдела разработки программного обеспечения");
+static QString sNameDivision    = QString::fromUtf8("по разработкам");
+
+static QString sLeadDefault     = QString("Фамилия И. О.");
+
+static QMap<QString, QString> sProjectLeads;
 
 void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
 {
@@ -57,9 +69,9 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
     //// Write HTML ============================================================
 
     QLocale locale = QLocale::system();
-    QString title = "Данные о занятости сотрудников "
-                    "отдела разработки программного обеспечения "
-                    "за " + locale.standaloneMonthName(date.month()) +
+    QString title = "Данные о занятости сотрудников " +
+                    sNameDepartment +
+                    " за " + locale.standaloneMonthName(date.month()) +
                     " " + QString::number(date.year()) + " г.";
 
     QXmlStreamWriter stream(&file);
@@ -304,7 +316,7 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
                     stream.writeAttribute("rowspan", QString::number(totalTasks));
                     stream.writeAttribute("class", "rotate");
                     stream.writeAttribute("height", "100 mm");
-                    stream.writeTextElement("div", "ФИО");
+                    stream.writeTextElement("div", sLeadDefault);
                     stream.writeEndElement();
 
                     stream.writeStartElement("td");
@@ -385,7 +397,7 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
 
     stream.writeTextElement("p", "Руководитель подразделения: ________________");
     stream.writeTextElement("p", "СОГЛАСОВАНО:");
-    stream.writeTextElement("p", "Заместитель генерального директора по разработкам: ________________");
+    stream.writeTextElement("p", "Заместитель генерального директора " + sNameDivision + ": ________________");
     stream.writeTextElement("p", "Финансовый директор: ________________");
     stream.writeTextElement("p", "Исполнительный директор: ________________");
 
@@ -520,6 +532,59 @@ int main(int argc, char *argv[])
             mHourstTotalTask[entry.project][entry.plan].actual       += entry.hours;
             mHoursTotalWorker[entry.name].actual                     += entry.hours;
             mHoursTotalOverall.actual                                += entry.hours;
+        }
+    }
+
+    //// Load settings =========================================================
+
+    {
+        Settings settings;
+
+        QJsonDocument settingsDocument;
+
+        QDir settingsDir = settings.getWorkPath();
+
+        QFile settingsFile(settingsDir.filePath("report-builder-html.json"));
+        if (settingsFile.open(QIODevice::ReadOnly))
+        {
+            settingsDocument = QJsonDocument::fromJson(settingsFile.readAll());
+        }
+
+        //// Common ------------------------------------------------------------
+
+        QJsonObject settingsObject = settingsDocument.object();
+
+        QJsonObject settingsNameObject = settingsObject.value("name").toObject();
+        QJsonObject settingsLeadObject = settingsObject.value("lead").toObject();
+
+        //// Name --------------------------------------------------------------
+
+        if (settingsNameObject.contains("department"))
+        {
+            sNameDepartment = settingsNameObject.value("department").toString();
+        }
+
+        if (settingsNameObject.contains("division"))
+        {
+            sNameDivision = settingsNameObject.value("division").toString();
+        }
+
+        //// Lead --------------------------------------------------------------
+
+        if (settingsLeadObject.contains("default"))
+        {
+            sLeadDefault = settingsLeadObject.value("default").toString();
+        }
+
+        if (settingsLeadObject.contains("project") &&
+            settingsLeadObject.value("project").isObject())
+        {
+            QJsonObject settingsLeadProjectObject = settingsLeadObject.value("project").toObject();
+
+            foreach (const QString& key, settingsLeadProjectObject.keys())
+            {
+                sProjectLeads.insert(key, settingsLeadProjectObject.value(key).toString());
+            }
         }
     }
 
