@@ -228,9 +228,23 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
 
     int orderNum = 1;
 
+    //// Generate project leads map --------------------------------------------
+
+    QMap<QString, QStringList> projectLeads;
+    projectLeads.insert(sLeadDefault, mHourstTotalProject.keys());
+
+    foreach (const QString& project, sProjectLeads.keys())
+    {
+        projectLeads[sLeadDefault].removeAll(project);
+        projectLeads[sProjectLeads.value(project)].append(project);
+    }
+
+    //// -----------------------------------------------------------------------
+
+    foreach (const QString& lead, projectLeads.keys())
     {
         bool firstProject = true;
-        QStringList projects = mHourstTotalProject.keys();
+        QStringList projects = projectLeads.value(lead);
 
         int totalTasks = 0;
 
@@ -316,7 +330,7 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
                     stream.writeAttribute("rowspan", QString::number(totalTasks));
                     stream.writeAttribute("class", "rotate");
                     stream.writeAttribute("height", "100 mm");
-                    stream.writeTextElement("div", sLeadDefault);
+                    stream.writeTextElement("div", lead);
                     stream.writeEndElement();
 
                     stream.writeStartElement("td");
