@@ -36,6 +36,11 @@ static QString sLeadDefault     = QString("Фамилия И. О.");
 
 static QMap<QString, QString> sProjectLeads;
 
+bool compareStrings(const QString& s1, const QString& s2)
+{
+    return (s1 < s2);
+}
+
 void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
 {
     //// Extract style =========================================================
@@ -136,6 +141,7 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
     stream.writeEndElement();
 
     QStringList workers = mHoursTotalWorker.keys();
+    std::sort(workers.begin(), workers.end(), compareStrings);
 
     foreach (const QString& worker, workers)
     {
@@ -239,12 +245,16 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
         projectLeads[sProjectLeads.value(project)].append(project);
     }
 
+    QStringList leadsList = projectLeads.keys();
+    std::sort(leadsList.begin(), leadsList.end(), compareStrings);
+
     //// -----------------------------------------------------------------------
 
-    foreach (const QString& lead, projectLeads.keys())
+    foreach (const QString& lead, leadsList)
     {
         bool firstProject = true;
         QStringList projects = projectLeads.value(lead);
+        std::sort(projects.begin(), projects.end(), compareStrings);
 
         int totalTasks = 0;
 
