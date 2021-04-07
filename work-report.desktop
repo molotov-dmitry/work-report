@@ -19,4 +19,4 @@ X-MultipleArgs=false
 Type=Application
 Icon=time-admin
 Categories=Office;Network
-StartupNotify=true
+
