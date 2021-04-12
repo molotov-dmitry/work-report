@@ -10,8 +10,8 @@ Comment[ru]=Создай шикарный отчёт и отправь его с
 GenericName=Work report editor
 GenericName[ru]=Редактор отчетов
 
-Keywords=Report
-Keywords[ru]=Отчет;Отчёт
+Keywords=Report;Jnxtn;Master;Vfcnth
+Keywords[ru]=Отчет;Отчёт;Кузщке;Мастер;Ьфыеук
 
 Exec=work-report
 Terminal=false
