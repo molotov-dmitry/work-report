@@ -499,66 +499,6 @@ int main(int argc, char *argv[])
         reportsActual << ita.next();
     }
 
-    //// Load entries ==========================================================
-
-    //// Planned ---------------------------------------------------------------
-
-    foreach (const QString& report, reportsPlanned)
-    {
-        QList<ReportEntry> entries;
-        ReportImport import;
-
-        if (not import.readReport(report, entries, true))
-        {
-            qCritical() << import.lastError();
-            qCritical() << "In file " << report;
-            return 1;
-        }
-
-        foreach (const ReportEntry& entry, entries)
-        {
-            if (entry.type != TASK_ACTION)
-            {
-                continue;
-            }
-
-            mHoursStat[entry.project][entry.description][entry.name].planned    += entry.hours;
-            mHourstTotalProject[entry.project].planned                          += entry.hours;
-            mHourstTotalTask[entry.project][entry.description].planned          += entry.hours;
-            mHoursTotalWorker[entry.name].planned                               += entry.hours;
-            mHoursTotalOverall.planned                                          += entry.hours;
-        }
-    }
-
-    //// Actual ----------------------------------------------------------------
-
-    foreach (const QString& report, reportsActual)
-    {
-        QList<ReportEntry> entries;
-        ReportImport import;
-
-        if (not import.readReport(report, entries, false))
-        {
-            qCritical() << import.lastError();
-            qCritical() << "In file " << report;
-            return 1;
-        }
-
-        foreach (const ReportEntry& entry, entries)
-        {
-            if (entry.type != TASK_ACTION)
-            {
-                continue;
-            }
-
-            mHoursStat[entry.project][entry.plan][entry.name].actual += entry.hours;
-            mHourstTotalProject[entry.project].actual                += entry.hours;
-            mHourstTotalTask[entry.project][entry.plan].actual       += entry.hours;
-            mHoursTotalWorker[entry.name].actual                     += entry.hours;
-            mHoursTotalOverall.actual                                += entry.hours;
-        }
-    }
-
     //// Load settings =========================================================
 
     {
@@ -612,13 +552,78 @@ int main(int argc, char *argv[])
         }
     }
 
-    //// Write plan and report =================================================
+    //// Generate plan =========================================================
+
+    //// Load plans ------------------------------------------------------------
+
+    foreach (const QString& report, reportsPlanned)
+    {
+        QList<ReportEntry> entries;
+        ReportImport import;
+
+        if (not import.readReport(report, entries, true))
+        {
+            qCritical() << import.lastError();
+            qCritical() << "In file " << report;
+            return 1;
+        }
+
+        foreach (const ReportEntry& entry, entries)
+        {
+            if (entry.type != TASK_ACTION)
+            {
+                continue;
+            }
+
+            mHoursStat[entry.project][entry.description][entry.name].planned    += entry.hours;
+            mHourstTotalProject[entry.project].planned                          += entry.hours;
+            mHourstTotalTask[entry.project][entry.description].planned          += entry.hours;
+            mHoursTotalWorker[entry.name].planned                               += entry.hours;
+            mHoursTotalOverall.planned                                          += entry.hours;
+        }
+    }
+
+    //// Write pan -------------------------------------------------------------
+
+    buildReportHtml(reportDate, reportDirectory, true);
+
+    //// Generate report =======================================================
+
+    //// Load reports ----------------------------------------------------------
+
+    foreach (const QString& report, reportsActual)
+    {
+        QList<ReportEntry> entries;
+        ReportImport import;
+
+        if (not import.readReport(report, entries, false))
+        {
+            qCritical() << import.lastError();
+            qCritical() << "In file " << report;
+            return 1;
+        }
+
+        foreach (const ReportEntry& entry, entries)
+        {
+            if (entry.type != TASK_ACTION)
+            {
+                continue;
+            }
+
+            mHoursStat[entry.project][entry.plan][entry.name].actual += entry.hours;
+            mHourstTotalProject[entry.project].actual                += entry.hours;
+            mHourstTotalTask[entry.project][entry.plan].actual       += entry.hours;
+            mHoursTotalWorker[entry.name].actual                     += entry.hours;
+            mHoursTotalOverall.actual                                += entry.hours;
+        }
+    }
+
+    //// Write report ----------------------------------------------------------
 
     if (mHoursTotalOverall.actual > 0)
     {
         buildReportHtml(reportDate, reportDirectory, false);
     }
-    buildReportHtml(reportDate, reportDirectory, true);
 
     //// =======================================================================
 
