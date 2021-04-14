@@ -195,6 +195,11 @@ void DialogTaskEdit::updatePlannedTask()
 {
     QString text = ui->editPlan->currentText();
 
+    if (ui->editPlan->findText(text) >= 0)
+    {
+        text.clear();
+    }
+
     ui->editPlan->clear();
 
     QPair<QString, QString> key(ui->editProject->currentText(),
@@ -246,6 +251,11 @@ void DialogTaskEdit::updatePlannedTask()
 void DialogTaskEdit::on_editProject_currentTextChanged(const QString &arg1)
 {
     QString text = ui->editProduct->currentText();
+
+    if (ui->editProduct->findText(text) >= 0)
+    {
+        text.clear();
+    }
 
     ui->editProduct->clear();
 
