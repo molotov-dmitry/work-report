@@ -9,6 +9,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#define DEFAULT_WORK_HOURS 8
+
 Settings::Settings()
 {
     loadDefaultSettings();
@@ -50,6 +52,11 @@ Settings::Settings()
     outlookPath = configObject["outlookPath"].toString();
 #endif
 
+    if (configObject.contains("workHours"))
+    {
+        mWorkHours = configObject["workHours"].toInt(DEFAULT_WORK_HOURS);
+    }
+
     configFile.close();
 }
 
@@ -83,6 +90,8 @@ void Settings::save()
     configObject["outlookPath"] = outlookPath;
 #endif
 
+    configObject["workHours"] = mWorkHours;
+
     QFile configFile(configPath);
 
     if (not configFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -104,6 +113,8 @@ void Settings::loadDefaultSettings()
     QDir dir(path);
 
     workPath = dir.absoluteFilePath("Отчеты");
+
+    mWorkHours = DEFAULT_WORK_HOURS;
 }
 
 QString Settings::getUserName(bool shortFormat) const
@@ -200,6 +211,16 @@ QString Settings::getWorkPath() const
 void Settings::setWorkPath(const QString &value)
 {
     workPath = value;
+}
+
+int Settings::getWorkHours() const
+{
+    return mWorkHours;
+}
+
+void Settings::setWorkHours(int workHours)
+{
+    mWorkHours = workHours;
 }
 
 #ifdef Q_OS_WIN

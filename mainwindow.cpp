@@ -381,14 +381,14 @@ void MainWindow::updateTotalHours()
 
             if (workDaysList.contains(d.day()))
             {
-                hoursTotal += 8;
+                hoursTotal += mSettings.getWorkHours();
             }
         }
         else
         {
             if (d.dayOfWeek() <= Qt::Friday)
             {
-                hoursTotal += 8;
+                hoursTotal += mSettings.getWorkHours();
             }
         }
     }

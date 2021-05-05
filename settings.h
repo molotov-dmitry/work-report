@@ -36,6 +36,9 @@ public:
     void setOutlookPath(const QString &value);
 #endif
 
+    int getWorkHours() const;
+    void setWorkHours(int workHours);
+
 private:
 
     QString mUserFirstName;
@@ -46,6 +49,8 @@ private:
 
     QString mailTo;
     QString workPath;
+
+    int     mWorkHours;
 
 #ifdef Q_OS_WIN
     QString outlookPath;

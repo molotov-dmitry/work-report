@@ -235,7 +235,7 @@ void DialogProjectPlan::updatePlanDate(const QDate& date)
 void DialogProjectPlan::updatePlanHours()
 {
     int hoursWork = 0;
-    int hoursTotal = ui->widgetWorkDays->workDaysCount() * 8;
+    int hoursTotal = ui->widgetWorkDays->workDaysCount() * mSettings.getWorkHours();
 
     const int count = ui->tablePlan->topLevelItemCount();
 
