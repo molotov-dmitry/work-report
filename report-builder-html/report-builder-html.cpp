@@ -519,6 +519,8 @@ int main(int argc, char *argv[])
         {
             if (entry.type != TASK_ACTION)
             {
+                mHoursTotalWorker[entry.name].planned += 0;
+
                 continue;
             }
 
