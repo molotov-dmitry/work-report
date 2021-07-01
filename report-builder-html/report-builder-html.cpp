@@ -339,7 +339,12 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
                     stream.writeStartElement("td");
                     stream.writeAttribute("rowspan", QString::number(totalTasks));
                     stream.writeAttribute("class", "rotate");
-                    stream.writeAttribute("height", "100 mm");
+
+                    if (not lead.isEmpty())
+                    {
+                        stream.writeAttribute("height", "100 mm");
+                    }
+
                     stream.writeTextElement("div", lead);
                     stream.writeEndElement();
 
