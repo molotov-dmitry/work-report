@@ -69,8 +69,6 @@ private:
 
     QMap< QDate, QList<int> > mWorkDays;
 
-    bool             mForceSetDate;
-
     void reloadWorkDays();
     void setupDateRange();
 
@@ -83,13 +81,10 @@ private slots:
     void updateExportStatus();
     void updateTotalHours();
 
-    void updateDateAuto();
-
     void dateRangeChanged();
     void on_table_itemSelectionChanged();
     void on_actionImport_triggered();
     void on_buttonPlan_clicked();
-    void on_checkDateToAuto_toggled(bool checked);
 };
 
 #endif // MAINWINDOW_H

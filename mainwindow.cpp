@@ -38,8 +38,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    mDataExported(false),
-    mForceSetDate(true)
+    mDataExported(false)
 {
     ui->setupUi(this);
 
@@ -100,8 +99,6 @@ MainWindow::MainWindow(QWidget *parent) :
     loadData();
     updateTotalHours();
 
-    mForceSetDate = false;
-
     //// Setup table ===========================================================
 
     ui->table->setColumnHidden(COL_PLAN, true);
@@ -118,8 +115,6 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         QTimer::singleShot(0, this, SIGNAL(on_buttonSettings_clicked()));
     }
-
-    //// =======================================================================
 }
 
 MainWindow::~MainWindow()
@@ -423,103 +418,8 @@ void MainWindow::updateTotalHours()
 
 }
 
-void MainWindow::updateDateAuto()
-{
-    if (mForceSetDate)
-    {
-        return;
-    }
-
-    QDate dateStart = ui->dateFrom->date();
-    QDate currentDate = dateStart;
-    QDate monthStart = QDate(dateStart.year(), dateStart.month(), 1);
-
-    //// Date satrt ============================================================
-
-    while (true)
-    {
-        if (currentDate.dayOfWeek() == Qt::Monday)
-        {
-            break;
-        }
-
-        currentDate = currentDate.addDays(-1);
-
-        if (currentDate.month() != dateStart.month())
-        {
-            break;
-        }
-
-        if (mWorkDays.contains(monthStart))
-        {
-            QList<int> workDays = mWorkDays.value(monthStart);
-
-            if (workDays.contains(currentDate.day()))
-            {
-                dateStart = currentDate;
-            }
-        }
-        else if (currentDate.dayOfWeek() <= Qt::Friday)
-        {
-            dateStart = currentDate;
-        }
-    }
-
-    //// Date from =============================================================
-
-    QDate dateFinish = dateStart;
-
-    currentDate = dateStart;
-
-    while (true)
-    {
-        if (mWorkDays.contains(monthStart))
-        {
-            QList<int> workDays = mWorkDays.value(monthStart);
-
-            if (workDays.contains(currentDate.day()))
-            {
-                dateFinish = currentDate;
-            }
-        }
-        else if (currentDate.dayOfWeek() <= Qt::Friday)
-        {
-            dateFinish = currentDate;
-        }
-
-        if (currentDate.dayOfWeek() == Qt::Sunday)
-        {
-            break;
-        }
-
-        currentDate = currentDate.addDays(1);
-
-        if (currentDate.month() != dateFinish.month())
-        {
-            break;
-        }
-    }
-
-    //// Set new dates =========================================================
-
-    if (ui->dateFrom->date() != dateStart)
-    {
-        ui->dateFrom->setDate(dateStart);
-    }
-
-    if (ui->dateTo->date() != dateFinish)
-    {
-        ui->dateTo->setDate(dateFinish);
-    }
-}
-
 void MainWindow::dateRangeChanged()
 {
-    if (ui->checkDateToAuto->isChecked())
-    {
-        updateDateAuto();
-    }
-
     updateTotalHours();
 }
 
@@ -575,8 +475,6 @@ void MainWindow::loadData()
     {
         QMessageBox::warning(this, QString::fromUtf8("Экспорт"), QString::fromUtf8("Данные за прошлую неделю не были экспортированы"));
     }
-
-    ui->checkDateToAuto->setChecked(false);
 
     if (from.isValid())
     {
@@ -1279,14 +1177,4 @@ void MainWindow::on_buttonPlan_clicked()
 
     reloadWorkDays();
     updateTotalHours();
-}
-
-void MainWindow::on_checkDateToAuto_toggled(bool checked)
-{
-    ui->dateTo->setDisabled(checked);
-
-    if (checked)
-    {
-        updateDateAuto();
-    }
 }
