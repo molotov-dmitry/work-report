@@ -1219,10 +1219,8 @@ void MainWindow::on_actionImport_triggered()
         return;
     }
 
-    mForceSetDate = true;
     ui->dateFrom->setDate(entries.first().from);
     ui->dateTo->setDate(entries.last().to);
-    mForceSetDate = false;
 
     ui->table->clear();
 
@@ -1280,12 +1278,6 @@ void MainWindow::on_buttonPlan_clicked()
     dialog.exec();
 
     reloadWorkDays();
-
-    if (ui->checkDateToAuto->isChecked())
-    {
-        updateDateAuto();
-    }
-
     updateTotalHours();
 }
 
