@@ -38,25 +38,43 @@ int main(int argc, char *argv[])
 
     //// Get report paths list =================================================
 
-    QStringList reports;
+    QStringList reportsPlanned;
 
-    QDirIterator it(reportDirectory.absolutePath(), QStringList() << QString::fromUtf8("Отчет ??.??.???? - ??.??.????.csv"), QDir::Files, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
-    while (it.hasNext())
+    QDirIterator itp(reportDirectory.absolutePath(), QStringList() << QString::fromUtf8("План \?\?\?\?-\?\?.csv"), QDir::Files, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
+    while (itp.hasNext())
     {
-        reports << it.next();
+        reportsPlanned << itp.next();
     }
 
-    //// =======================================================================
+    QStringList reportsActual;
 
-    QList<ReportEntry> entries;
+    QDirIterator ita(reportDirectory.absolutePath(), QStringList() << QString::fromUtf8("Отчет ??.??.???? - ??.??.????.csv"), QDir::Files, QDirIterator::Subdirectories | QDirIterator::FollowSymlinks);
+    while (ita.hasNext())
+    {
+        reportsActual << ita.next();
+    }
 
-    //// =======================================================================
+    //// Read plans/reports ====================================================
 
-    foreach (const QString& report, reports)
+    QList<ReportEntry> entriesPlanned;
+    QList<ReportEntry> entriesActual;
+
+    foreach (const QString& report, reportsPlanned)
     {
         ReportImport import;
 
-        if (not import.readReport(report, entries))
+        if (not import.readReport(report, entriesPlanned, true))
+        {
+            qCritical() << "In file " << report;
+            return 1;
+        }
+    }
+
+    foreach (const QString& report, reportsActual)
+    {
+        ReportImport import;
+
+        if (not import.readReport(report, entriesActual))
         {
             qCritical() << "In file " << report;
             return 1;
@@ -65,11 +83,11 @@ int main(int argc, char *argv[])
 
     //// Sort reports ==========================================================
 
-    std::sort(entries.begin(), entries.end(), compareReportEntries);
+    std::sort(entriesActual.begin(), entriesActual.end(), compareReportEntries);
 
     //// Print statistics ======================================================
 
-    printStatistics(entries);
+    printStatistics(entriesPlanned, entriesActual);
 
     //// Build total by date ===================================================
 
@@ -83,7 +101,7 @@ int main(int argc, char *argv[])
     QTextStream streamTotalByDate(&fileReportTotal);
     streamTotalByDate.setGenerateByteOrderMark(true);
 
-    BuildReportTotalBydate(entries, streamTotalByDate);
+    BuildReportTotalBydate(entriesActual, streamTotalByDate);
 
     //// Build total by date ===================================================
 
@@ -97,7 +115,7 @@ int main(int argc, char *argv[])
     QTextStream streamCompactByDate(&fileReportCompact);
     streamTotalByDate.setGenerateByteOrderMark(true);
 
-    BuildReportTotalBydate(squashReportList(entries), streamCompactByDate);
+    BuildReportTotalBydate(squashReportList(entriesActual), streamCompactByDate);
 
     //// Build reduced =========================================================
 
@@ -111,7 +129,7 @@ int main(int argc, char *argv[])
     QTextStream streamReduced(&fileReportReduced);
     streamReduced.setGenerateByteOrderMark(true);
 
-    BuildReportReduced(entries, streamReduced);
+    BuildReportReduced(entriesActual, streamReduced);
 
     //// Build planned =========================================================
 
@@ -125,7 +143,7 @@ int main(int argc, char *argv[])
     QTextStream streamPlanned(&fileReportPlanned);
     streamPlanned.setGenerateByteOrderMark(true);
 
-    BuildReportPlanned(entries, streamPlanned);
+    BuildReportPlanned(entriesActual, streamPlanned);
 
     //// =======================================================================
 

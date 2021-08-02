@@ -5,6 +5,7 @@
 
 #include "reportentry.h"
 
-void printStatistics(const QList<ReportEntry>& list);
+void printStatistics(const QList<ReportEntry>& plan,
+                     const QList<ReportEntry>& actual);
 
 #endif // REPORTBUILDERSTATISTICS_H
