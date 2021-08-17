@@ -2,6 +2,8 @@
 #include "ui_dialogtaskedit.h"
 
 #include <QToolButton>
+#include <QMessageBox>
+
 #include "values.h"
 
 DialogTaskEdit::DialogTaskEdit(QWidget *parent) :
@@ -182,6 +184,22 @@ void DialogTaskEdit::setPlannedTasks(const PlannedTasks& tasks)
     mPlannedTasks = tasks.getPlannedTasks();
 
     updatePlannedTask();
+}
+
+void DialogTaskEdit::accept()
+{
+    if (ui->editPlan->isEnabled() && ui->editPlan->currentText().isEmpty())
+    {
+        QString text = QString::fromUtf8("Поле \"План\" не заполнено. Продолжить?");
+        if (QMessageBox::question(this,
+                                  this->windowTitle(),
+                                  text) != QMessageBox::Yes)
+        {
+            return;
+        }
+    }
+
+    QDialog::accept();
 }
 
 void DialogTaskEdit::setHoursPreset()

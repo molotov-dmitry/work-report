@@ -48,6 +48,10 @@ public:
     void setProjectTemplates(const ProjectTemplates& projects);
     void setPlannedTasks(const PlannedTasks& tasks);
 
+protected slots:
+
+    void accept() override;
+
 private slots:
 
     void setHoursPreset();
