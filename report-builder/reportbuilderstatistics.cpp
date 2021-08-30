@@ -51,7 +51,7 @@ void printHours(QTextStream& stream, int plan, int actual, int width, int level,
         stream << " / " << plan << QString::fromUtf8(" ч.");
     }
 
-    stream << COL_RESET << Qt::endl;
+    stream << COL_RESET << endl;
 }
 
 void printStatistics(const QList<ReportEntry>& plan,
@@ -135,6 +135,6 @@ void printStatistics(const QList<ReportEntry>& plan,
         printHours(stream, planHours.vacation, actualHours.vacation, width, 1, "Отпуск/отгулы");
         printHours(stream, planHours.illness,  actualHours.illness,  width, 1, "Болезнь");
 
-        stream << Qt::endl;
+        stream << endl;
     }
 }
