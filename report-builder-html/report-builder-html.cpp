@@ -241,8 +241,11 @@ void buildReportHtml(const QDate& date, const QDir &dir, bool onlyPlan)
 
     foreach (const QString& project, sProjectLeads.keys())
     {
-        projectLeads[sLeadDefault].removeAll(project);
-        projectLeads[sProjectLeads.value(project)].append(project);
+        if (mHourstTotalProject.keys().contains(project))
+        {
+            projectLeads[sLeadDefault].removeAll(project);
+            projectLeads[sProjectLeads.value(project)].append(project);
+        }
     }
 
     QStringList leadsList = projectLeads.keys();
